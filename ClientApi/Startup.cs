@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Uma.Authorization;
+using SimpleIdentityServer.UmaIntrospection.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace ClientApi
 {
@@ -27,7 +30,22 @@ namespace ClientApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Authorization policy
+            services.AddAuthorization(options =>
+            {
+                // Add conventional uma authorization
+                options.AddPolicy("uma", policy =>
+                {
+                    // policy.Requirements.Add(new ConventionalUmaAuthorizationRequirementTst(null));
+                    policy.AddConventionalUma();
+                    // options.AddPolicy("resourceSet", policy => policy.AddResourceUma("<url>", "<read>","<update>"));
+                });
+            });
+
+
             // Add framework services.
+            services.AddAuthentication();
+            services.AddLogging();
             services.AddMvc();
         }
 
@@ -35,8 +53,13 @@ namespace ClientApi
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
+            app.UseStatusCodePages();
+            var options = new UmaIntrospectionOptions
+            {
+                ResourcesUrl = "https://localhost:5444/api/vs/resources",
+                UmaConfigurationUrl = "http://localhost:5445/.well-known/uma-configuration"
+            };
+            app.UseAuthenticationWithUmaIntrospection();
             app.UseMvc();
         }
     }
