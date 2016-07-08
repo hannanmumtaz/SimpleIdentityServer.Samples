@@ -57,9 +57,9 @@ namespace ClientApi
             var options = new UmaIntrospectionOptions
             {
                 ResourcesUrl = "https://localhost:5444/api/vs/resources",
-                UmaConfigurationUrl = "http://localhost:5445/.well-known/uma-configuration"
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
             };
-            app.UseAuthenticationWithUmaIntrospection();
+            app.UseAuthenticationWithUmaIntrospection(options);
             app.UseMvc();
         }
     }
