@@ -28,15 +28,15 @@ namespace Scenario1.WpfClient
         {
             InitializeComponent();
             WebBrowser.Address = OpenIdHelper.GetAuthorizationUrl();
-            WebBrowser.FrameLoadEnd += FrameLoadEnd;
+            WebBrowser.FrameLoadStart += FrameLoadStart;
             _identityTokenHelper = new IdentityTokenHelper();
         }
 
         #endregion
 
         #region Private methods
-        
-        private void FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
+
+        private void FrameLoadStart(object sender, FrameLoadStartEventArgs e)
         {
             var url = e.Url;
             if (OpenIdHelper.IsCallback(url))
@@ -46,6 +46,7 @@ namespace Scenario1.WpfClient
                 // 2. Set claims
                 SetClaims(tokens.IdentityToken);
             }
+
         }
 
         private async Task SetClaims(string identityToken)
@@ -60,21 +61,21 @@ namespace Scenario1.WpfClient
             }
 
             // 3. Extract role
-            var roleClaim = claims.GetArrayClaim(Constants.StandardResourceOwnerClaimNames.Role);
+            var roleClaim = claims.GetArrayClaim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role);
             var claimLst = new List<Claim>();
             if (roleClaim != null)
             {
                 foreach (var role in roleClaim)
                 {
-                    claimLst.Add(new Claim(Constants.StandardResourceOwnerClaimNames.Role, role));
+                    claimLst.Add(new Claim(SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role, role));
                 }
             }
 
             // 4. Extract resource owner claims
             foreach (var claim in claims)
             {
-                if (Constants.AllStandardResourceOwnerClaimNames.Contains(claim.Key) &&
-                    claim.Key != Constants.StandardResourceOwnerClaimNames.Role)
+                if (SimpleIdentityServer.Core.Jwt.Constants.AllStandardResourceOwnerClaimNames.Contains(claim.Key) &&
+                    claim.Key != SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role)
                 {
                     claimLst.Add(new Claim(claim.Key, claim.Value.ToString()));
                 }

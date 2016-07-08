@@ -43,8 +43,8 @@ namespace Scenario1.WpfClient
                 return;
             }
 
-            var subject = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Subject);
-            var name = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == Constants.StandardResourceOwnerClaimNames.Name);
+            var subject = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject);
+            var name = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name);
             if (subject != null)
             {
                 _viewModel.Subject = subject.Value;

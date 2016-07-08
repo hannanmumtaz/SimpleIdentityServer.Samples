@@ -137,7 +137,9 @@
     <Compile Include="ClientsWindow.xaml.cs">
       <DependentUpon>ClientsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="OpenIdHelper.cs" />
+    <Compile Include="SecurityProxyClientApi.cs" />
     <Compile Include="ViewModels\ClientsWindowViewModel.cs" />
     <Page Include="ClientsWindow.xaml">
       <SubType>Designer</SubType>
