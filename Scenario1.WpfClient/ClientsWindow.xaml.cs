@@ -30,6 +30,7 @@ namespace Scenario1.WpfClient
 
         private void ClientsLoaded(object sender, RoutedEventArgs e)
         {
+            // 1. Display user information
             if (Thread.CurrentPrincipal == null ||
                 Thread.CurrentPrincipal.Identity == null ||
                 !Thread.CurrentPrincipal.Identity.IsAuthenticated)
@@ -56,6 +57,9 @@ namespace Scenario1.WpfClient
             }
 
             DataContext = _viewModel;
+
+            // 2. Get an RPT token
+            SecurityProxyClientApi.GetRptToken(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "id_token").Value);
         }
 
         #endregion

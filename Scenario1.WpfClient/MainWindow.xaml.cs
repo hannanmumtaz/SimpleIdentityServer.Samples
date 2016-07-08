@@ -81,6 +81,8 @@ namespace Scenario1.WpfClient
                 }
             }
 
+            claimLst.Add(new Claim("id_token", identityToken));
+
             ExecuteCallbackOnUIThread(() =>
             {
                 // 5. Set current principal
