@@ -14,8 +14,8 @@ namespace Scenario1.WpfClient
             {
                 ClientId = Constants.ClientInfo.ClientId,
                 ClientSecret = Constants.ClientInfo.ClientSecret,
-                UmaConfigurationUrl = "http://localhost:5001/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
                 RootManageApiUrl = "https://localhost:5444/api"
             });
             try

@@ -18,7 +18,7 @@ namespace Scenario1.WpfClient
         private readonly IIdentityTokenHelper _identityTokenHelper;
 
         // This url should be stored in a configuration file
-        private const string ConfigurationUrl = "http://localhost:5000/.well-known/openid-configuration";
+        private const string ConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
 
         #endregion
 
