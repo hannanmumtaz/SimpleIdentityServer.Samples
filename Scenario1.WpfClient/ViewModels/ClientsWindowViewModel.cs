@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Scenario1.WpfClient.ViewModels
 {
@@ -9,6 +10,15 @@ namespace Scenario1.WpfClient.ViewModels
         private string _subject;
 
         private string _name;
+
+        #endregion
+
+        #region Constructor
+
+        public ClientsWindowViewModel()
+        {
+            Clients = new ObservableCollection<ClientViewModel>();
+        }
 
         #endregion
 
@@ -39,6 +49,8 @@ namespace Scenario1.WpfClient.ViewModels
                 NotifyPropertyChanged("Name");
             }
         }
+
+        public ObservableCollection<ClientViewModel> Clients { get; set; }
 
         #endregion
 
