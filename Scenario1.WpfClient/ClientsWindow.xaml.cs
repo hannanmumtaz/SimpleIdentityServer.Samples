@@ -1,5 +1,6 @@
 ﻿using Scenario1.WpfClient.ViewModels;
 using SimpleIdentityServer.Core.Jwt;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -38,6 +39,7 @@ namespace Scenario1.WpfClient
                 return;
             }
 
+            DisplayClients();
             DataContext = _viewModel;
         }
 
@@ -79,8 +81,13 @@ namespace Scenario1.WpfClient
             var httpClient = new HttpClient();
             var request = new HttpRequestMessage
             {
-                
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("http://localhost:5100/api/clients")
             };
+            request.Headers.Add("Authorization", $"Bearer {rptToken}");
+            var response = await httpClient.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+            string s = "";
         }
 
         #endregion
