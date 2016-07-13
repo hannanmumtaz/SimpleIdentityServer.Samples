@@ -1,84 +1,386 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
+using System.IO;
 using System.Threading.Tasks;
 using WsFederation.Messages;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Xml;
 
 namespace WsFederation
 {
-    internal class WsFedAuthenticationHandler : WsFedCookieAuthenticationHandler
+    internal class WsFedAuthenticationHandler : RemoteAuthenticationHandler<WsFedAuthenticationOptions>
     {
-        #region Public methods
-
-        public override Task<bool> HandleRequestAsync()
+        protected override Task<AuthenticateResult> HandleRemoteAuthenticateAsync()
         {
-            return base.HandleRequestAsync();
+            return null;
         }
 
-        #endregion
-
-        #region Protected methods
+        protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
+        {
+            // 1. Redirect to the page
+            var returnUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}";
+            var signInResponse = new SignInRequestMessage(new Uri(Options.IdPEndpoint), Options.Realm, returnUrl);
+            Response.Redirect(signInResponse.RequestUrl);
+            return true;
+        }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            return await base.HandleAuthenticateAsync();
+            // 1. Parse the request
+            if (string.Equals(Request.Method, "POST", StringComparison.OrdinalIgnoreCase)
+              && !string.IsNullOrWhiteSpace(Request.ContentType)
+              // May have media/type; charset=utf-8, allow partial match.
+              && Request.ContentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase)
+              && Request.Body.CanRead)
+            {
+                if (!Request.Body.CanSeek)
+                {
+                    // Buffer in case this body was not meant for us.
+                    var memoryStream = new MemoryStream();
+                    await Request.Body.CopyToAsync(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    Request.Body = memoryStream;
+                }
+
+                var form = await Request.ReadFormAsync();
+
+            }
+
+            return null;
         }
 
-        protected override async Task HandleSignInAsync(SignInContext context)
-        {
-            var signInContext = context as WsFedSignInContext;
-            var principal = GetClaimsPrincipal(signInContext.SignInMessage);
+        /*
+        private const string HeaderValueNoCache = "no-cache";
+        private const string HeaderValueMinusOne = "-1";
+        private const string SessionIdClaim = "Microsoft.AspNet.Authentication.Cookies-SessionId";
+        private bool _shouldRenew;
+        private DateTimeOffset? _renewIssuedUtc;
+        private DateTimeOffset? _renewExpiresUtc;
+        private string _sessionKey;
+        private Task<AuthenticationTicket> _cookieTicketTask;
 
-            if (principal != null)
+        private Task<AuthenticationTicket> EnsureCookieTicket(bool forceRead = false)
+        {
+            // We only need to read the ticket once
+            if (_cookieTicketTask == null || forceRead)
             {
-                var newContext = new WsFedSignInContext(
-                    context.AuthenticationScheme, 
-                    principal, 
-                    context.Properties, 
-                    null, 
-                    signInContext.ReturnUrl);
-                await base.HandleSignInAsync(newContext);
+                _cookieTicketTask = ReadCookieTicket();
+            }
+            return _cookieTicketTask;
+        }
+
+        private async Task<AuthenticationTicket> ReadCookieTicket()
+        {
+            var cookie = Options.CookieManager.GetRequestCookie(Context, Options.CookieName);
+            if (string.IsNullOrEmpty(cookie))
+            {
+                return null;
+            }
+
+            var ticket = Options.TicketDataFormat.Unprotect(cookie, GetTlsTokenBinding());
+            if (ticket == null)
+            {
+                Logger.LogWarning(@"Unprotect ticket failed");
+                return null;
+            }
+
+            if (Options.SessionStore != null)
+            {
+                var claim = ticket.Principal.Claims.FirstOrDefault(c => c.Type.Equals(SessionIdClaim));
+                if (claim == null)
+                {
+                    Logger.LogWarning(@"SessionId missing");
+                    return null;
+                }
+                _sessionKey = claim.Value;
+                ticket = await Options.SessionStore.RetrieveAsync(_sessionKey);
+                if (ticket == null)
+                {
+                    Logger.LogWarning(@"Identity missing in session store");
+                    return null;
+                }
+            }
+
+            var currentUtc = Options.SystemClock.UtcNow;
+            var issuedUtc = ticket.Properties.IssuedUtc;
+            var expiresUtc = ticket.Properties.ExpiresUtc;
+
+            if (expiresUtc != null && expiresUtc.Value < currentUtc)
+            {
+                if (Options.SessionStore != null)
+                {
+                    await Options.SessionStore.RemoveAsync(_sessionKey);
+                }
+                return null;
+            }
+
+            var allowRefresh = ticket.Properties.AllowRefresh ?? true;
+            if (issuedUtc != null && expiresUtc != null && Options.SlidingExpiration && allowRefresh)
+            {
+                var timeElapsed = currentUtc.Subtract(issuedUtc.Value);
+                var timeRemaining = expiresUtc.Value.Subtract(currentUtc);
+
+                if (timeRemaining < timeElapsed)
+                {
+                    _shouldRenew = true;
+                    _renewIssuedUtc = currentUtc;
+                    var timeSpan = expiresUtc.Value.Subtract(issuedUtc.Value);
+                    _renewExpiresUtc = currentUtc.Add(timeSpan);
+                }
+            }
+
+            // Finally we have a valid ticket
+            return ticket;
+        }
+
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var ticket = await EnsureCookieTicket();
+            if (ticket == null)
+            {
+                return AuthenticateResult.Fail("No ticket.");
+            }
+
+            var context = new CookieValidatePrincipalContext(Context, ticket, Options);
+            await Options.Events.ValidatePrincipal(context);
+
+            if (context.Principal == null)
+            {
+                return AuthenticateResult.Fail("No principal.");
+            }
+
+            if (context.ShouldRenew)
+            {
+                _shouldRenew = true;
+            }
+
+            return AuthenticateResult.Success(new AuthenticationTicket(context.Principal, context.Properties, Options.AuthenticationScheme));
+        }
+
+        private CookieOptions BuildCookieOptions()
+        {
+            var cookieOptions = new CookieOptions
+            {
+                Domain = Options.CookieDomain,
+                HttpOnly = Options.CookieHttpOnly,
+                Path = Options.CookiePath ?? (OriginalPathBase.HasValue ? OriginalPathBase.ToString() : "/"),
+            };
+            if (Options.CookieSecure == CookieSecurePolicy.SameAsRequest)
+            {
+                cookieOptions.Secure = Request.IsHttps;
+            }
+            else
+            {
+                cookieOptions.Secure = Options.CookieSecure == CookieSecurePolicy.Always;
+            }
+
+            return cookieOptions;
+        }
+
+        protected override async Task FinishResponseAsync()
+        {
+            // Only renew if requested, and neither sign in or sign out was called
+            if (!_shouldRenew || SignInAccepted || SignOutAccepted)
+            {
                 return;
             }
 
-            //Couldn't get a principal even though we've said sign in, so send to forbidden - could be the wrong STS environment, or incorrect certificate config, or some other accidental or nefarious reason for this.
-            var cc = new ChallengeContext(Options.AuthenticationScheme);
-            await base.HandleForbiddenAsync(cc);
+            // REVIEW: Should this check if there was an error, and then if that error was already handled??
+            var ticket = (await HandleAuthenticateOnceAsync())?.Ticket;
+            if (ticket != null)
+            {
+                if (_renewIssuedUtc.HasValue)
+                {
+                    ticket.Properties.IssuedUtc = _renewIssuedUtc;
+                }
+                if (_renewExpiresUtc.HasValue)
+                {
+                    ticket.Properties.ExpiresUtc = _renewExpiresUtc;
+                }
+
+                if (Options.SessionStore != null && _sessionKey != null)
+                {
+                    await Options.SessionStore.RenewAsync(_sessionKey, ticket);
+                    var principal = new ClaimsPrincipal(
+                        new ClaimsIdentity(
+                            new[] { new Claim(SessionIdClaim, _sessionKey, ClaimValueTypes.String, Options.ClaimsIssuer) },
+                            Options.AuthenticationScheme));
+                    ticket = new AuthenticationTicket(principal, null, Options.AuthenticationScheme);
+                }
+
+                var cookieValue = Options.TicketDataFormat.Protect(ticket, GetTlsTokenBinding());
+
+                var cookieOptions = BuildCookieOptions();
+                if (ticket.Properties.IsPersistent && _renewExpiresUtc.HasValue)
+                {
+                    cookieOptions.Expires = _renewExpiresUtc.Value.ToUniversalTime().DateTime;
+                }
+
+                Options.CookieManager.AppendResponseCookie(
+                    Context,
+                    Options.CookieName,
+                    cookieValue,
+                    cookieOptions);
+
+                await ApplyHeaders(shouldRedirectToReturnUrl: false);
+            }
         }
 
-        protected override Task HandleSignOutAsync(SignOutContext signOutContext)
+        protected override async Task HandleSignInAsync(SignInContext signin)
         {
-            //do the default cookie sign out to kill the apps local cookie.
-            var result = base.HandleSignOutAsync(signOutContext);
+            var ticket = await EnsureCookieTicket(signin is WsFedSignInContext);
+            var cookieOptions = BuildCookieOptions();
 
-            //create the Fed Sign Out url from a SignOutRequestMessage
-            var logOutPath = Options.LogoutPath.HasValue ? Options.LogoutPath : new PathString("/");
-            string replyUrl = $"{Request.Scheme}://{Request.Host}{logOutPath}";
-            var req = new SignOutRequestMessage(new Uri(Options.IdPEndpoint));
-            req.Parameters.Add("wtrealm", Options.Realm);
-            req.Parameters.Add("wreply", replyUrl);
-            var signOutUrl = req.WriteQueryString();
+            var signInContext = new CookieSigningInContext(
+                Context,
+                Options,
+                Options.AuthenticationScheme,
+                signin.Principal,
+                new AuthenticationProperties(signin.Properties),
+                cookieOptions);
 
-            //Add a header to the response containing the fed sign out url. Did this as Redirecting from here in the pipeline doesn't seem to work.
-            //Bit of a Hack - this header can be read later if a Fed Sign Out is required.
-            Response.Headers.Add("fedSignOutUrl", "https://localhost/IdentityServer/core/wsfed/?wa=wsignout1.0&wtrealm=https%3a%2f%2flocalhost%3a44346%2f&wreply=https%3a%2f%2flocalhost%3a44346%2f");
+            DateTimeOffset issuedUtc;
+            if (signInContext.Properties.IssuedUtc.HasValue)
+            {
+                issuedUtc = signInContext.Properties.IssuedUtc.Value;
+            }
+            else
+            {
+                issuedUtc = Options.SystemClock.UtcNow;
+                signInContext.Properties.IssuedUtc = issuedUtc;
+            }
 
-            return result;
+            if (!signInContext.Properties.ExpiresUtc.HasValue)
+            {
+                signInContext.Properties.ExpiresUtc = issuedUtc.Add(Options.ExpireTimeSpan);
+            }
+
+            await Options.Events.SigningIn(signInContext);
+
+            if (signInContext.Properties.IsPersistent)
+            {
+                var expiresUtc = signInContext.Properties.ExpiresUtc ?? issuedUtc.Add(Options.ExpireTimeSpan);
+                signInContext.CookieOptions.Expires = DateTime.SpecifyKind(expiresUtc.ToUniversalTime().DateTime, DateTimeKind.Utc);
+            }
+
+            ticket = new AuthenticationTicket(signInContext.Principal, signInContext.Properties, signInContext.AuthenticationScheme);
+            if (Options.SessionStore != null)
+            {
+                if (_sessionKey != null)
+                {
+                    await Options.SessionStore.RemoveAsync(_sessionKey);
+                }
+                _sessionKey = await Options.SessionStore.StoreAsync(ticket);
+                var principal = new ClaimsPrincipal(
+                    new ClaimsIdentity(
+                        new[] { new Claim(SessionIdClaim, _sessionKey, ClaimValueTypes.String, Options.ClaimsIssuer) },
+                        Options.ClaimsIssuer));
+                ticket = new AuthenticationTicket(principal, null, Options.AuthenticationScheme);
+            }
+            var cookieValue = Options.TicketDataFormat.Protect(ticket, GetTlsTokenBinding());
+
+            Options.CookieManager.AppendResponseCookie(
+                Context,
+                Options.CookieName,
+                cookieValue,
+                signInContext.CookieOptions);
+
+            var signedInContext = new CookieSignedInContext(
+                Context,
+                Options,
+                Options.AuthenticationScheme,
+                signInContext.Principal,
+                signInContext.Properties);
+
+            await Options.Events.SignedIn(signedInContext);
+
+            //should always redirect for WsFed - well for passive anyway.
+            string returnUrl = null;
+            if (signin is WsFedSignInContext)
+            {
+                returnUrl = (signin as WsFedSignInContext).ReturnUrl;
+            }
+            await ApplyHeaders(true, returnUrl);
         }
-        
-        protected override Task FinishResponseAsync()
+
+        protected override async Task HandleSignOutAsync(SignOutContext signOutContext)
         {
-            return base.FinishResponseAsync();
+            var ticket = await EnsureCookieTicket();
+            var cookieOptions = BuildCookieOptions();
+            if (Options.SessionStore != null && _sessionKey != null)
+            {
+                await Options.SessionStore.RemoveAsync(_sessionKey);
+            }
+
+            var context = new CookieSigningOutContext(
+                Context,
+                Options,
+                null,
+                cookieOptions);
+
+            await Options.Events.SigningOut(context);
+
+            Options.CookieManager.DeleteCookie(
+                Context,
+                Options.CookieName,
+                context.CookieOptions);
+
+            // Only redirect on the logout path
+            var shouldRedirect = Options.LogoutPath.HasValue && OriginalPath == Options.LogoutPath;
+            await ApplyHeaders(shouldRedirect);
         }
 
-        protected override Task<bool> HandleForbiddenAsync(ChallengeContext context)
+        private async Task ApplyHeaders(bool shouldRedirectToReturnUrl, string returnUrl = null)
         {
-            return base.HandleForbiddenAsync(context);
+            Response.Headers[HeaderNames.CacheControl] = HeaderValueNoCache;
+            Response.Headers[HeaderNames.Pragma] = HeaderValueNoCache;
+            Response.Headers[HeaderNames.Expires] = HeaderValueMinusOne;
+            if (shouldRedirectToReturnUrl && Response.StatusCode == 200)
+            {
+                var query = Request.Query;
+                var redirectUri = query[Options.ReturnUrlParameter];
+                if ((!StringValues.IsNullOrEmpty(redirectUri) && IsHostRelative(redirectUri)) || !String.IsNullOrWhiteSpace(returnUrl))
+                {
+                    var redirectContext = new CookieRedirectContext(
+                        Context, 
+                        Options, 
+                        returnUrl ?? redirectUri,
+                        null);
+                    await Options.Events.RedirectToReturnUrl(redirectContext);
+                }
+            }
+
+        }
+
+        private static bool IsHostRelative(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+            if (path.Length == 1)
+            {
+                return path[0] == '/';
+            }
+            return path[0] == '/' && path[1] != '/' && path[1] != '\\';
+        }
+
+        protected override async Task<bool> HandleForbiddenAsync(ChallengeContext context)
+        {
+            var accessDeniedUri =
+                Request.Scheme +
+                "://" +
+                Request.Host +
+                OriginalPathBase +
+                Options.AccessDeniedPath;
+
+            var redirectContext = new CookieRedirectContext(
+                Context, 
+                Options, 
+                accessDeniedUri,
+                null);
+            await Options.Events.RedirectToAccessDenied(redirectContext);
+            return true;
         }
 
         protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
@@ -88,130 +390,28 @@ namespace WsFederation
                 throw new ArgumentNullException(nameof(context));
             }
 
-            //create a return url that is the current requests full url
-            var returnUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}";
-
-            //if user not authenticated but the form post contains a SignInResponseMessage - so they've come back from the IdP after signing in - handle it to sign the user in to this app.
-            var signInResponse = GetSignInResponseMessage();
-            if (signInResponse != null)
+            var redirectUri = new AuthenticationProperties(context.Properties).RedirectUri;
+            if (string.IsNullOrEmpty(redirectUri))
             {
-                Dictionary<string, string> props = new Dictionary<string, string>();
-
-                //Add the persistent option to the props for the cookie handler here if it's set to true in the Options object. This is to have IsPersistent available as a higher level option instead of
-                //having to pass to SignInAsync as an option.
-                if (Options.IsPersistent)
-                {
-                    props.Add(".persistent", "");
-                }
-
-                WsFedSignInContext c = new WsFedSignInContext(Options.AuthenticationScheme, Context.User, props, signInResponse, returnUrl);
-                await this.SignInAsync(c);
-                return true;
+                redirectUri = OriginalPathBase + Request.Path + Request.QueryString;
             }
 
-            //User is not authenticated, so create SignInRequest message to send to IdP endpoint, and redirect there.
-            SignInRequestMessage req = new SignInRequestMessage(new Uri(Options.IdPEndpoint), Options.Realm, returnUrl);
-            var signInUrl = req.RequestUrl;
+            var loginUri = Options.LoginPath + QueryString.Create(Options.ReturnUrlParameter, redirectUri);
             var redirectContext = new CookieRedirectContext(
                 Context, 
                 Options, 
-                signInUrl, 
+                BuildRedirectUri(loginUri),
                 null);
             await Options.Events.RedirectToLogin(redirectContext);
             return true;
+
         }
 
-        #endregion
-
-        #region Private methods
-
-        private SignInResponseMessage GetSignInResponseMessage()
+        private string GetTlsTokenBinding()
         {
-            if (Context.Request.HasFormContentType)
-            {
-                //convert form into NameValueCollection for SignInResponseMessage checking.
-                var nvc = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
-                foreach (var fv in Context.Request.Form)
-                {
-                    nvc.Add(fv.Key, fv.Value);
-                }
-
-                //check if this is a sign in response
-                SignInResponseMessage signInResponse = SignInResponseMessage.CreateFromNameValueCollection(new Uri(Options.Realm), nvc) as SignInResponseMessage;
-                return signInResponse;
-            }
-
-            return null;
+            var binding = Context.Features.Get<ITlsTokenBindingFeature>()?.GetProvidedTokenBindingId();
+            return binding == null ? null : Convert.ToBase64String(binding);
         }
-        
-        private static bool IsAjaxRequest(HttpRequest request)
-        {
-            return string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
-                string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
-        }
-
-        private ClaimsPrincipal GetClaimsPrincipal(SignInResponseMessage signInResponse)
-        {
-            try
-            {
-                //configure the certificate and some service token handler configuration properties (these basically match the web.config settings for MVC 4/5 app).
-                /*
-                SecurityTokenHandlerConfiguration config = new SecurityTokenHandlerConfiguration();
-                config.AudienceRestriction.AllowedAudienceUris.Add(new Uri(Options.Realm));
-                config.CertificateValidationMode = System.ServiceModel.Security.X509CertificateValidationMode.None; //we have dodgy certs in dev
-
-                ConfigurationBasedIssuerNameRegistry inr = new ConfigurationBasedIssuerNameRegistry();
-                inr.AddTrustedIssuer(Options.SigningCertThumbprint, Options.ClaimsIssuer);
-                config.IssuerNameRegistry = inr;
-                config.CertificateValidator = System.IdentityModel.Selectors.X509CertificateValidator.None; //we have dodgy certs in dev
-
-                //Load up an XmlDocument with the result. Have to use XmlDocument so we can generate a valid reader unfortunately.
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(signInResponse.Result);
-
-                //Add the namespaces and search for Assertion or EncryptedAssertion
-                XmlNamespaceManager nsMan = new XmlNamespaceManager(xmlDoc.NameTable);
-                nsMan.AddNamespace("trust", "http://docs.oasis-open.org/ws-sx/ws-trust/200512");
-                nsMan.AddNamespace("saml2", "urn:oasis:names:tc:SAML:2.0:assertion");
-                var parentNodes = "trust:RequestSecurityTokenResponseCollection/trust:RequestSecurityTokenResponse/trust:RequestedSecurityToken/";
-                var assertionNode = xmlDoc.SelectSingleNode(parentNodes + "saml2:EncryptedAssertion", nsMan);
-                if (assertionNode == null)
-                {
-                    assertionNode = xmlDoc.SelectSingleNode(parentNodes + "saml2:Assertion", nsMan);
-                }
-                else
-                {
-                    //this is an encrypted response so add a ServiceTokenResolver of X509CertificateStoreTokenResolver so the assertion can be decrypted. Hard codes LocalMachine - could be configured as well.
-                    // config.ServiceTokenResolver = new X509CertificateStoreTokenResolver(Options.EncryptionCertStoreName, StoreLocation.LocalMachine);
-                }
-
-                if (assertionNode == null)
-                {
-                    throw new Exception("No assertion element found in Response.");
-                }
-
-                using (var reader = new XmlNodeReader(assertionNode))
-                {
-                    //Get the token and convert it to a Claims Principal for return
-                    SecurityTokenHandlerCollection collection = SecurityTokenHandlerCollection.CreateDefaultSecurityTokenHandlerCollection(config);
-                    var securityToken = collection.ReadToken(reader);
-                    var claimsIdentities = collection.ValidateToken(securityToken);
-
-                    ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentities);
-                    return principal;
-                }*/
-
-            }
-            catch (Exception ex)
-            {
-                //TODO: Add some logging
-                var err = ex;
-            }
-
-
-            return null;
-        }
-
-        #endregion
+        */
     }
 }

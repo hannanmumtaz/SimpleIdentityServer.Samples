@@ -6,6 +6,8 @@ namespace WsFederation
 {
     public static class WsFedAppBuilderExtensions
     {
+        #region Public static methods
+
         public static IApplicationBuilder UseWsFedAuthentication(this IApplicationBuilder app)
         {
             if (app == null)
@@ -52,5 +54,7 @@ namespace WsFederation
 
             return app.UseMiddleware<WsFedAuthenticationMiddleware>(Options.Create(options));
         }
+
+        #endregion
     }
 }

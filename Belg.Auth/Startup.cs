@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text.Encodings.Web;
 using WsFederation;
 
 namespace Belg.Auth
@@ -25,8 +26,7 @@ namespace Belg.Auth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddAuthentication();
+            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddLogging();
             services.AddMvc();
         }
@@ -36,13 +36,23 @@ namespace Belg.Auth
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             app.UseStatusCodePages();
+
+            // 1. Enable cookie authentication
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                LoginPath = new PathString("/Authenticate")
+            });
+
+            // 2. Enable WSFederation authentication
             app.UseWsFedAuthentication(options =>
             {
                 options.IdPEndpoint = "https://www.e-contract.be/eid-idp/protocol/ws-federation/auth-ident";
-                options.AuthenticationScheme = "Belg.Auth";
+                options.AuthenticationScheme = "EID";
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.AutomaticChallenge = true;
                 options.AutomaticAuthenticate = true;
-                options.CookieHttpOnly = true;
             });
             app.UseMvc();
         }
