@@ -53,6 +53,7 @@ namespace Belg.Auth
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.AutomaticChallenge = true;
                 options.AutomaticAuthenticate = true;
+                options.RedirectPath = new PathString("/api/clients");
             });
             app.UseMvc();
         }

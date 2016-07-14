@@ -14,22 +14,57 @@ namespace WsFederation
 {
     internal class WsFedAuthenticationHandler : AuthenticationHandler<WsFedAuthenticationOptions>
     {
-        protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
+        private static Dictionary<string, string> _mappingWifToOpenIdClaims = new Dictionary<string, string>
         {
-            var returnUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}";
-            if (!string.IsNullOrWhiteSpace(Options.RedirectUrl))
             {
-                returnUrl = Options.RedirectUrl;
+                ClaimTypes.Gender, "gender"
+            },
+            {
+                ClaimTypes.GivenName, "given_name"
+            },
+            {
+                ClaimTypes.Name, "name"
+            },
+            {
+                ClaimTypes.Role, "role"
+            },
+            {
+                ClaimTypes.DateOfBirth, "birthdate"
+            },
+            {
+                ClaimTypes.Email, "email"
+            },
+            {
+                ClaimTypes.MobilePhone, "phone_number"
+            },
+            {
+                ClaimTypes.HomePhone, "phone_number_verified"
+            },
+            {
+                ClaimTypes.Webpage, "website"
+            }
+        };
+
+        public override async Task<bool> HandleRequestAsync()
+        {
+            if (Options.CallbackPath == Request.Path)
+            {
+                return await HandleRemoveCallbackAsync();
             }
 
+            return false;
+        }
+
+        protected override async Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
+        {
+            var returnUrl = BuildRedirectUri(Options.CallbackPath);
             var signInResponse = new SignInRequestMessage(new Uri(Options.IdPEndpoint), Options.Realm, returnUrl);
             Response.Redirect(signInResponse.RequestUrl);
             return true;
         }
-
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        
+        protected virtual async Task<bool> HandleRemoveCallbackAsync()
         {
-            AuthenticateResult result = null;
             try
             {
                 if (string.Equals(Request.Method, "POST", StringComparison.OrdinalIgnoreCase)
@@ -73,7 +108,7 @@ namespace WsFederation
 
                     if (assertionNode == null)
                     {
-                        return AuthenticateResult.Skip();
+                        return false;
                     }
 
                     List<Claim> claims = null;
@@ -105,33 +140,76 @@ namespace WsFederation
                                         }
                                     }
 
-                                    claims.Add(new Claim(id, attribute.InnerText));
+                                    claims.Add(ToClaim(id, attribute.InnerText));
                                 }
                             }
                         }
                     }
-                    
-                    var claimsIdentity = new ClaimsIdentity(claims);
+
+                    var claimsIdentity = new ClaimsIdentity(claims, Options.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(claimsIdentity);
-                    var ticket = new AuthenticationTicket(principal, 
-                        new AuthenticationProperties(), 
+                    var ticket = new AuthenticationTicket(principal,
+                        new AuthenticationProperties(),
                         Options.AuthenticationScheme);
-                    result = AuthenticateResult.Success(ticket);
-                    if (PriorHandler != null)
+                    await Context.Authentication.SignInAsync(
+                        Options.SignInScheme,
+                        principal,
+                        new AuthenticationProperties());
+
+                    var redirectPath = Options.RedirectPath;
+                    if (string.IsNullOrWhiteSpace(redirectPath))
                     {
-                        var signInContext = new SignInContext(Options.SignInScheme,
-                            principal,
-                            new Dictionary<string, string>());
-                        await PriorHandler.SignInAsync(signInContext);
+                        redirectPath = "/";
                     }
+
+                    var redirectUrl = BuildRedirectUri(redirectPath);
+                    Response.Redirect(redirectUrl);
+                    return true;
                 }
             }
-            catch(Exception exception)
+            catch (Exception)
             {
-                result = AuthenticateResult.Fail(exception);
+                return false;
             }
-            
-            return result;
+
+            return false;
+        }
+
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            if (PriorHandler != null)
+            {
+                var authenticateContext = new AuthenticateContext(Options.SignInScheme);
+                await PriorHandler.AuthenticateAsync(authenticateContext);
+                if (authenticateContext.Accepted)
+                {
+                    if (authenticateContext.Error != null)
+                    {
+                        return AuthenticateResult.Fail(authenticateContext.Error);
+                    }
+
+                    if (authenticateContext.Principal != null)
+                    {
+                        return AuthenticateResult.Success(new AuthenticationTicket(authenticateContext.Principal,
+                            new AuthenticationProperties(authenticateContext.Properties), Options.AuthenticationScheme));
+                    }
+
+                    return AuthenticateResult.Fail("Not authenticated");
+                }
+
+            }
+
+            return AuthenticateResult.Fail("Remote authentication does not support authenticate");
+        }
+
+        private static Claim ToClaim(string key, string value)
+        {
+            if (!_mappingWifToOpenIdClaims.ContainsKey(key))
+            {
+                return new Claim(key, value);
+            }
+
+            return new Claim(_mappingWifToOpenIdClaims[key], value);
         }
     }
 }

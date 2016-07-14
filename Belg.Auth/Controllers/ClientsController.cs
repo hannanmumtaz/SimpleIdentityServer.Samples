@@ -16,13 +16,6 @@ namespace Belg.Auth.Controllers
             return new string[] { "client_1", "client_2" };
         }
 
-        [HttpGet("{id}")]
-        public string Get(string id)
-        {
-            var user = User;
-            return "coucou";
-        }
-
         #endregion
     }
 }
