@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Xml;
 
 namespace WsFederation
 {
@@ -16,13 +20,11 @@ namespace WsFederation
 
         public string Realm { get; set; }
 
-        public string SigningCertThumbprint { get; set; }
-
-        public string EncryptionCertStoreName { get; set; }
-
-        public bool IsPersistent { get; set; }
-
         public string IdPEndpoint { get; set; }
+
+        public string RedirectUrl { get; set; }
+
+        public Func<XmlNodeList, List<Claim>> GetClaimsCallback { get; set; }
 
         #endregion
     }
