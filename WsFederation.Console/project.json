@@ -5,18 +5,11 @@
   },
 
   "dependencies": {
-    "Microsoft.NETCore.App": {
-      "type": "platform",
-      "version": "1.0.0"
-    },
-    "System.Xml.XmlDocument": "4.0.1",
-    "System.Linq": "4.1.0",
     "WsFederation": "*"
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
-      "imports": "dnxcore50"
+    "net46": {
     }
   }
 }
