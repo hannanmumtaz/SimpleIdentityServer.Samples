@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Scenario2.WebApplication": {
+      "commandName": "Project",
+      "commandLineArgs": "--server.urls=http://*:5101"
+    }
+  }
+}
