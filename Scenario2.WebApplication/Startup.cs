@@ -14,11 +14,12 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
+using SimpleIdentityServer.UmaIntrospection.Authentication;
 
 namespace SimpleIdentityServer.TokenValidation.Host.Tests
 {
@@ -51,6 +52,13 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
+            var options = new UmaIntrospectionOptions
+            {
+                ResourcesUrl = "https://localhost:5444/api/vs/resources",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                IncludeSubResources = true
+            };
+            app.UseAuthenticationWithUmaIntrospection(options);
             app.UseStatusCodePages();
             app.UseMvc(routes =>
             {
