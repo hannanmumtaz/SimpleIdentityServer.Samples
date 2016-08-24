@@ -17,7 +17,7 @@ namespace WpfClient.ViewModels
 
         public ClientsWindowViewModel()
         {
-            Clients = new ObservableCollection<ClientViewModel>();
+            Clients = new ObservableCollection<string>();
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace WpfClient.ViewModels
             }
         }
 
-        public ObservableCollection<ClientViewModel> Clients { get; set; }
+        public ObservableCollection<string> Clients { get; set; }
 
         #endregion
 

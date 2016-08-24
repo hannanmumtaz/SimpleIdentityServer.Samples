@@ -15,6 +15,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -24,6 +26,8 @@
             <TextBlock Grid.Column="1" Text="{Binding Path=Subject}" />
             <Label Grid.Row="1">Name</Label>
             <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Path=Name}" />
+            <Label Grid.Row="2" Grid.Column="0">Clients</Label>
+            <ListBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Path=Clients}"></ListBox>
         </Grid>
     </Grid>
 </Window>

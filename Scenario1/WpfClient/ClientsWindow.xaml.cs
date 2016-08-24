@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace WpfClient
 {
@@ -74,8 +76,15 @@ namespace WpfClient
 
         private async Task DisplayClients()
         {
+            _viewModel.Clients.Clear();
             var claimsPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal;
             var rptToken = await SecurityProxyClientApi.GetRptToken(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "id_token").Value);
+            if (rptToken == null)
+            {
+                MessageBox.Show("You're not authorized");
+                return;
+            }
+
             var httpClient = new HttpClient();
             var request = new HttpRequestMessage
             {
@@ -85,7 +94,11 @@ namespace WpfClient
             request.Headers.Add("Authorization", $"Bearer {rptToken}");
             var response = await httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
-            string s = "";
+            var clients = JsonConvert.DeserializeObject<List<string>>(content);
+            foreach(var client in clients)
+            {
+                _viewModel.Clients.Add(client);
+            }
         }
 
         #endregion

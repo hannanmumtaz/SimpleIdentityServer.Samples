@@ -142,7 +142,6 @@
     <Compile Include="OpenIdHelper.cs" />
     <Compile Include="SecurityProxyClientApi.cs" />
     <Compile Include="ViewModels\ClientsWindowViewModel.cs" />
-    <Compile Include="ViewModels\ClientViewModel.cs" />
     <Page Include="ClientsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
