@@ -18,23 +18,22 @@ namespace WebApplication
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = "e8db4d32-dbd1-4b62-b8c0-62f50e539e21",
-                ClientSecret = "cdc93990-b5f3-4788-8dd1-50858cf9394f",
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
-                RootManageApiUrl = "https://localhost:5444/api"
+                ClientId = Constants.ClientId,
+                ClientSecret = Constants.ClientSecret,
+                UmaConfigurationUrl = Constants.UmaConfigurationUrl,
+                OpenidConfigurationUrl = Constants.OpenIdConfigurationUrl,
+                RootManageApiUrl = Constants.RootManagerApiUrl
             });
-            const string resourceUrl = "resources/WebSite";
             var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
             var resources = await resourceClient
                         .SearchResources(new SearchResourceRequest
                         {
                             IsExactUrl = true,
                             AuthorizationPolicyFilter = AuthorizationPolicyFilters.All,
-                            Url = resourceUrl
-                        }, "https://localhost:5444/api/vs/resources", string.Empty);
+                            Url = Constants.WebApplicationResource
+                        }, Constants.ResourcesUrl, string.Empty);
             var res = new List<string>();
-            foreach(var resource in resources)
+            foreach (var resource in resources)
             {
                 try
                 {

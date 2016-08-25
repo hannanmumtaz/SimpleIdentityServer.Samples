@@ -2,4 +2,16 @@
     ViewData["Title"] = "Home Page";
 }
 
-<h1>Index</h1>
+@using SimpleIdentityServer.Uma.Common
+@model List<Permission>
+
+<a href="@Url.Action("Disconnect")">Disconnect</a>
+<h1>Permissions</h1>
+@foreach (Permission permission in Model)
+{
+    <ul>
+        <li>Resource set id : @permission.ResourceSetId</li>
+        <li>Url : @permission.Url</li>
+        <li>Scopes : @String.Join(",", permission.Scopes)</li>
+    </ul>
+}

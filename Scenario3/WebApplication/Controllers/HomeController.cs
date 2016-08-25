@@ -16,6 +16,9 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleIdentityServer.Uma.Common;
+using System.Security.Claims;
+using WebApplication.Extensions;
 
 namespace WebApplication.Controllers
 {
@@ -24,7 +27,17 @@ namespace WebApplication.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            var authenticatedUser = this.GetAuthenticatedUser();
+            var identity = authenticatedUser.Identity as ClaimsIdentity;
+            var permissions = identity.GetPermissions();
+            return View(permissions);
+        }
+
+        public IActionResult Disconnect()
+        {
+            var authenticationManager = this.GetAuthenticationManager();
+            authenticationManager.SignOutAsync(Constants.CookieWebApplicationName).Wait();
+            return RedirectToAction("Index", "Authenticate");
         }
     }
 }

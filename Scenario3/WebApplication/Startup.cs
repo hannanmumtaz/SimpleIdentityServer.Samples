@@ -48,7 +48,7 @@ namespace WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSimpleIdentityServerJwt();
-            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+            services.AddAuthentication(opts => opts.SignInScheme = Constants.CookieWebApplicationName);
             services.AddMvc();
         }
 
@@ -61,6 +61,7 @@ namespace WebApplication
             {
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
+                AuthenticationScheme = Constants.CookieWebApplicationName,
                 LoginPath = new PathString("/Authenticate")
             });
 
