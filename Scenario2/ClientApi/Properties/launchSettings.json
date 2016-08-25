@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ClientApi": {
+      "commandName": "Project",
+      "launchUrl": "http://localhost:5100/api/clients",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

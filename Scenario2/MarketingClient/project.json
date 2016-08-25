@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "copyToOutput": [
+      "appsettings.json"
+    ]
+  },
+  "tooling": {
+    "defaultNamespace": "MarketingClient"
+  },
+  "dependencies": {
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.Authorization": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Authentication": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
+    "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final",
+    "Newtonsoft.Json": "9.0.1",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+    "Microsoft.AspNetCore.DataProtection": "1.0.0",
+    "Microsoft.Extensions.WebEncoders": "1.0.0",
+    "SimpleIdentityServer.Client": "1.0.0",
+    "SimpleIdentityServer.Uma.Client": "1.0.0",
+    "SimpleIdentityServer.Authentication.Common": "1.0.0",
+    "SimpleIdentityServer.Uma.Common": "1.0.0",
+    "SimpleIdentityServer.UmaManager.Client": "1.0.0",
+    "SimpleIdentityServer.Core.Common": "1.0.0",
+    "SimpleIdentityServer.Core.Jwt": "1.0.0",
+    "SimpleIdentityServer.Proxy": "1.0.0"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "dnxcore50",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "version": "1.0.0",
+          "type": "platform"
+        },
+        "CurlSharp": "0.6.2",
+        "System.Net.Http": "4.1.0"
+      },
+      "buildOptions": {
+        "define": [ "NET" ]
+      }
+    },
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Web": ""
+      }
+    }
+  }
+}
