@@ -3,7 +3,7 @@ using System.Web;
 
 namespace WpfClient
 {
-    internal class Tokens
+    public class Tokens
     {
         public string AccessToken { get; set; }
 
@@ -22,7 +22,7 @@ namespace WpfClient
 
         public static string GetAuthorizationUrl()
         {
-            return $"{Url}/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.ClientInfo.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientInfo.ClientId}&nonce=nonce&response_mode=query";
+            return $"{Url}/authorization?scope=openid role profile uma_authorization uma_protection&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.ClientInfo.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientInfo.ClientId}&nonce=nonce&response_mode=query";
         }
 
         public static Tokens GetTokens(string url)

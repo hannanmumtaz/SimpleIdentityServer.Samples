@@ -15,15 +15,18 @@ namespace WpfClient
     {
         #region Fields
 
-        private ClientsWindowViewModel _viewModel;
+        private readonly ClientsWindowViewModel _viewModel;
+
+        private readonly Tokens _tokens;
 
         #endregion
 
         #region Constructor
 
-        public ClientsWindow()
+        public ClientsWindow(Tokens tokens)
         {
             InitializeComponent();
+            _tokens = tokens;
             _viewModel = new ClientsWindowViewModel();
             Loaded += ClientsWindowLoaded;
         }
@@ -77,8 +80,10 @@ namespace WpfClient
         private async Task DisplayClients()
         {
             _viewModel.Clients.Clear();
-            var claimsPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal;
-            var rptToken = await SecurityProxyClientApi.GetRptToken(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "id_token").Value);
+            var rptToken = await SecurityProxyClientApi.GetRptToken(
+                _tokens.IdentityToken,
+                _tokens.AccessToken,
+                _tokens.AccessToken);
             if (rptToken == null)
             {
                 MessageBox.Show("You're not authorized");

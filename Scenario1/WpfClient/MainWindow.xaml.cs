@@ -39,19 +39,16 @@ namespace WpfClient
             var url = e.Url;
             if (OpenIdHelper.IsCallback(url))
             {
-                // 1. Extract id token & access token
-                var tokens = OpenIdHelper.GetTokens(url);
-                // 2. Set claims
-                SetClaims(tokens.IdentityToken);
+                SetClaims(OpenIdHelper.GetTokens(url));
             }
 
         }
 
-        private async Task SetClaims(string identityToken)
+        private async Task SetClaims(Tokens tokens)
         {
             // 1. Extract claims from identity token. We assumed it's a JWS token
             var claims = await _identityTokenHelper.UnSignByResolution(
-                identityToken,
+                tokens.IdentityToken,
                 ConfigurationUrl);
             if (claims == null)
             {
@@ -78,9 +75,7 @@ namespace WpfClient
                     claimLst.Add(new Claim(claim.Key, claim.Value.ToString()));
                 }
             }
-
-            claimLst.Add(new Claim("id_token", identityToken));
-
+            
             ExecuteCallbackOnUIThread(() =>
             {
                 // 5. Set current principal
@@ -89,7 +84,7 @@ namespace WpfClient
                 Thread.CurrentPrincipal = claimsPrincipal;
 
                 // 6. Display new view
-                new ClientsWindow().Show();
+                new ClientsWindow(tokens).Show();
                 this.Close();
             });
         }

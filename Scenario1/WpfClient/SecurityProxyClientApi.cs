@@ -7,7 +7,10 @@ namespace WpfClient
 {
     public static class SecurityProxyClientApi
     {
-        public static async Task<string> GetRptToken(string idToken)
+        public static async Task<string> GetRptToken(
+            string idToken,
+            string umaProtectionToken,
+            string umaAuthorizationToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
@@ -20,7 +23,7 @@ namespace WpfClient
             });
             try
             {
-                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, new List<string>
+                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
                 {
                     "execute"
                 });
