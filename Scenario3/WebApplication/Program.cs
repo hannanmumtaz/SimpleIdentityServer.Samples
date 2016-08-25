@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace SimpleIdentityServer.TokenValidation.Host.Tests
+namespace WebApplication
 {
     public class Program
     {
@@ -30,7 +30,10 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.UseHttps("WebApplication.pfx");
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>()

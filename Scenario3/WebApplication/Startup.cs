@@ -14,14 +14,17 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Core.Jwt;
 using SimpleIdentityServer.UmaIntrospection.Authentication;
 
-namespace SimpleIdentityServer.TokenValidation.Host.Tests
+namespace WebApplication
 {
     public class Startup
     {
@@ -43,7 +46,9 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
         }
 
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
+            services.AddSimpleIdentityServerJwt();
+            services.AddAuthentication(opts => opts.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddMvc();
         }
 
@@ -51,14 +56,15 @@ namespace SimpleIdentityServer.TokenValidation.Host.Tests
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole();
-            var options = new UmaIntrospectionOptions
+            // Enable cookie authentication
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                ResourcesUrl = "https://localhost:5444/api/vs/resources",
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
-                IncludeSubResources = true
-            };
-            app.UseAuthenticationWithUmaIntrospection(options);
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                LoginPath = new PathString("/Authenticate")
+            });
+
+            loggerFactory.AddConsole();
             app.UseStatusCodePages();
             app.UseMvc(routes =>
             {

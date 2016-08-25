@@ -14,24 +14,16 @@
 // limitations under the License.
 #endregion
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SimpleIdentityServer.Uma.Common;
-using System.Linq;
-using System.Security.Claims;
 
-namespace Scenario2.WebApplication.Controllers
+namespace WebApplication.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            var user = User.Identity as ClaimsIdentity;
-            var permissions = user.GetPermissions();
-            if (!permissions.Any(p => p.Url == "resources/WebSite/Home" && p.Scopes.Any(s => s == "execute")))
-            {
-                return Content("not authorized");
-            }
-
             return View();
         }
     }
