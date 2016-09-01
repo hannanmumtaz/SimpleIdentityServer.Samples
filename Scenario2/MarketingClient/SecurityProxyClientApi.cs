@@ -9,7 +9,8 @@ namespace MarketingClient
     {
         public static async Task<string> GetRptToken(
             string umaProtectionToken,
-            string umaAuthorizationToken)
+            string umaAuthorizationToken,
+            string resourceToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
@@ -20,7 +21,7 @@ namespace MarketingClient
             });
             try
             {
-                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", umaProtectionToken, umaAuthorizationToken, new List<string>
+                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
                 {
                     "execute"
                 });

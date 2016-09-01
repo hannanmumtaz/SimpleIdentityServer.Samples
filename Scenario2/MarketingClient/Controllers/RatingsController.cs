@@ -24,9 +24,9 @@ namespace MarketingClient.Controllers
     {
         #region Fields
 
-        private const string _clientId = "123d900f-1586-4ab2-b5c9-8d05d6e7aaae";
+        private const string _clientId = "a2ea17fa-fed6-4f92-ae01-1ffa3e0d996f";
 
-        private const string _clientSecret = "fdc25115-7079-458a-a36f-7e6822c3bad2";
+        private const string _clientSecret = "eb02b2a8-cfde-48a9-8089-d22f0ca0cc53";
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
@@ -47,7 +47,7 @@ namespace MarketingClient.Controllers
         {
             // Retrieve rpt token
             GrantedToken token = await GetAccessToken();
-            string rptToken = await SecurityProxyClientApi.GetRptToken(token.AccessToken, token.AccessToken);
+            string rptToken = await SecurityProxyClientApi.GetRptToken(token.AccessToken, token.AccessToken, token.AccessToken);
             // Get protected resource and returns ratings
             HttpClient httpClient = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage
@@ -81,7 +81,7 @@ namespace MarketingClient.Controllers
         {
             return await _identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretBasicAuth(_clientId, _clientSecret)
-                .UseClientCredentials("uma_authorization", "uma_protection")
+                .UseClientCredentials("uma_authorization", "uma_protection", "website_api")
                 .ResolveAsync("https://localhost:5443/.well-known/openid-configuration");
         }
 

@@ -66,6 +66,7 @@ namespace WebApplication.Controllers
             var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
             List<string> rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(identityToken.First(), 
                 accessToken.First(), 
+                accessToken.First(),
                 accessToken.First());
             foreach (string rpt in rpts)
             {
@@ -89,7 +90,7 @@ namespace WebApplication.Controllers
                         .SearchResources(new SearchResourceRequest
                         {
                             ResourceId = permission.ResourceSetId
-                        }, Constants.ResourcesUrl, string.Empty);
+                        }, Constants.ResourcesUrl, accessToken.First());
                     if (operations != null && operations.Any())
                     {
                         var operation = operations.First();

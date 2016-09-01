@@ -10,20 +10,19 @@ namespace WpfClient
         public static async Task<string> GetRptToken(
             string idToken,
             string umaProtectionToken,
-            string umaAuthorizationToken)
+            string umaAuthorizationToken,
+            string resourceToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = Constants.ClientInfo.ClientId,
-                ClientSecret = Constants.ClientInfo.ClientSecret,
                 UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
                 OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
                 RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {
-                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
+                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, umaProtectionToken, umaAuthorizationToken, resourceToken, new List <string>
                 {
                     "execute"
                 });

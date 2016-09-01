@@ -83,6 +83,7 @@ namespace WpfClient
             var rptToken = await SecurityProxyClientApi.GetRptToken(
                 _tokens.IdentityToken,
                 _tokens.AccessToken,
+                _tokens.AccessToken,
                 _tokens.AccessToken);
             if (rptToken == null)
             {

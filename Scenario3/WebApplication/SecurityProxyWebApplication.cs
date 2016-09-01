@@ -1,6 +1,7 @@
 ﻿using SimpleIdentityServer.Proxy;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,13 +14,12 @@ namespace WebApplication
         public static async Task<List<string>> GetRptTokenByRecursion(
             string idToken,
             string umaProtectionToken,
-            string umaAuthorizationToken)
+            string umaAuthorizationToken,
+            string resourceToken)
         {
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                ClientId = Constants.ClientId,
-                ClientSecret = Constants.ClientSecret,
                 UmaConfigurationUrl = Constants.UmaConfigurationUrl,
                 OpenidConfigurationUrl = Constants.OpenIdConfigurationUrl,
                 RootManageApiUrl = Constants.RootManagerApiUrl
@@ -31,13 +31,13 @@ namespace WebApplication
                             IsExactUrl = true,
                             AuthorizationPolicyFilter = AuthorizationPolicyFilters.All,
                             Url = Constants.WebApplicationResource
-                        }, Constants.ResourcesUrl, string.Empty);
+                        }, Constants.ResourcesUrl, resourceToken);
             var res = new List<string>();
             foreach (var resource in resources)
             {
                 try
                 {
-                    var result = await proxy.GetRpt(resource.Url, idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
+                    var result = await proxy.GetRpt(resource.Url, idToken, umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
                     {
                         "execute",
                         "read",
@@ -50,7 +50,7 @@ namespace WebApplication
 
                     res.Add(result);
                 }
-                catch
+                catch(Exception ex)
                 {
                     continue;
                 }
