@@ -70,7 +70,7 @@ namespace WebApplication.Controllers
                 accessToken.First());
             foreach (string rpt in rpts)
             {
-                IntrospectionResponse introspectionResponse = await introspectionClient.GetIntrospectionByResolvingUrlAsync(rpt, "https://localhost:5445/.well-known/uma-configuration");
+                IntrospectionResponse introspectionResponse = await introspectionClient.GetIntrospectionByResolvingUrlAsync(rpt, Constants.UmaConfigurationUrl);
                 if (introspectionResponse == null ||
                     introspectionResponse.Permissions == null ||
                     !introspectionResponse.Permissions.Any())

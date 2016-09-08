@@ -14,7 +14,7 @@ namespace WpfClient
     {
         #region Fields
 
-        private const string Url = "https://localhost:5443";
+        private const string Url = "https://lokit.westus.cloudapp.azure.com:5443";
 
         #endregion
 

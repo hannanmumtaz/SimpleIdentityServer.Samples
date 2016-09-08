@@ -16,7 +16,7 @@ namespace WpfClient
         private readonly IIdentityTokenHelper _identityTokenHelper;
 
         // This url should be stored in a configuration file
-        private const string ConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
+        private const string ConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration";
 
         #endregion
 

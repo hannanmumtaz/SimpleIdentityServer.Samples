@@ -13,12 +13,13 @@ namespace MarketingClient
             string resourceToken)
         {
             var factory = new SecurityProxyFactory();
-            var proxy = factory.GetProxy(new SecurityOptions
+            var opt = new SecurityOptions
             {
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
-                RootManageApiUrl = "https://localhost:5444/api"
-            });
+                UmaConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://lokit.westus.cloudapp.azure.com:5444/api"
+            };
+            var proxy = factory.GetProxy(opt);
             try
             {
                 var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>

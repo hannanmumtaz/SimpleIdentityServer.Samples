@@ -56,9 +56,9 @@ namespace ClientApi
             app.UseStatusCodePages();
             var options = new UmaIntrospectionOptions
             {
-                OpenIdWellKnownConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
-                ResourcesUrl = "https://localhost:5444/api/vs/resources",
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
+                OpenIdWellKnownConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration",
+                ResourcesUrl = "https://lokit.westus.cloudapp.azure.com:5444/api/vs/resources",
+                UmaConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5445/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);
             app.UseMvc();

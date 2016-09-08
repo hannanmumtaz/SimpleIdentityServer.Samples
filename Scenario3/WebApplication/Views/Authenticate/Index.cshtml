@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Authenticate";
-    string href = "https://localhost:5443/authorization?scope=openid role profile uma_authorization uma_protection website_api&state=75BCNvRlEGHpQRCT&redirect_uri=https://localhost:5105/Authenticate/Callback&response_type=id_token token&client_id="+ WebApplication.Constants.ClientId+"&nonce=nonce&response_mode=query";
+    string href = "https://lokit.westus.cloudapp.azure.com:5443/authorization?scope=openid role profile uma_authorization uma_protection website_api&state=75BCNvRlEGHpQRCT&redirect_uri=https://localhost:5105/Authenticate/Callback&response_type=id_token token&client_id=" + WebApplication.Constants.ClientId+"&nonce=nonce&response_mode=query";
 }
 
 <a href="@href">Connect</a>

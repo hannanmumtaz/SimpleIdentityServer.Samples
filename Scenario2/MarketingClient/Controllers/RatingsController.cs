@@ -24,9 +24,9 @@ namespace MarketingClient.Controllers
     {
         #region Fields
 
-        private const string _clientId = "a2ea17fa-fed6-4f92-ae01-1ffa3e0d996f";
+        private const string _clientId = "2ab0f69d-9160-413f-a79b-dae14dc3581e";
 
-        private const string _clientSecret = "eb02b2a8-cfde-48a9-8089-d22f0ca0cc53";
+        private const string _clientSecret = "b2423598-1c08-4958-b843-5db9b71222a8";
 
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
@@ -82,7 +82,7 @@ namespace MarketingClient.Controllers
             return await _identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretBasicAuth(_clientId, _clientSecret)
                 .UseClientCredentials("uma_authorization", "uma_protection", "website_api")
-                .ResolveAsync("https://localhost:5443/.well-known/openid-configuration");
+                .ResolveAsync("https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration");
         }
 
         #endregion
