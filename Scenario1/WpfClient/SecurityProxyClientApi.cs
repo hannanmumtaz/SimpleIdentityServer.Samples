@@ -16,9 +16,9 @@ namespace WpfClient
             var factory = new SecurityProxyFactory();
             var proxy = factory.GetProxy(new SecurityOptions
             {
-                UmaConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5445/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration",
-                RootManageApiUrl = "https://lokit.westus.cloudapp.azure.com:5444/api"
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration",
+                OpenidConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                RootManageApiUrl = "https://localhost:5444/api"
             });
             try
             {

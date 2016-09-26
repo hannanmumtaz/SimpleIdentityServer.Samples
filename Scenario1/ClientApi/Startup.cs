@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Uma.Authorization;
 using SimpleIdentityServer.UmaIntrospection.Authentication;
-using Microsoft.Extensions.Options;
 
 namespace ClientApi
 {
@@ -56,9 +51,9 @@ namespace ClientApi
             app.UseStatusCodePages();
             var options = new UmaIntrospectionOptions
             {
-                OpenIdWellKnownConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration",
-                ResourcesUrl = "https://lokit.westus.cloudapp.azure.com:5444/api/vs/resources",
-                UmaConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5445/.well-known/uma-configuration"
+                OpenIdWellKnownConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
+                ResourcesUrl = "https://localhost:5444/api/vs/resources",
+                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
             };
             app.UseAuthenticationWithUmaIntrospection(options);
             app.UseMvc();
