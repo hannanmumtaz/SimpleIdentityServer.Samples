@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace WpfClient
@@ -14,14 +17,26 @@ namespace WpfClient
     {
         #region Public static methods
 
-        public static string GetAuthorizationUrl()
+        public static async Task<string> GetAuthorizationUrl()
         {
-            return $"{Constants.BaseOpenidUrl}/authorization?scope=openid role profile uma_authorization uma_protection website_api&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientId}&nonce=nonce&response_mode=query";
+            var httpClient = new HttpClient();
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(Constants.OpenidConfigurationUrl)
+            };
+            var response = await httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var str = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(str);
+            var authEndPoint = json.authorization_endpoint;
+            return $"{authEndPoint}?scope=openid role profile uma_authorization uma_protection website_api uma&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientId}&nonce=nonce&response_mode=fragment";
         }
 
         public static Tokens GetTokens(string url)
         {
-            var queries = HttpUtility.ParseQueryString(new Uri(url).Query);
+            var fragment = new Uri(url).Fragment.TrimStart('#');
+            var queries = HttpUtility.ParseQueryString(fragment);
             return new Tokens
             {
                 AccessToken = queries["access_token"],

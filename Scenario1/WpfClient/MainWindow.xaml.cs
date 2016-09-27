@@ -22,9 +22,15 @@ namespace WpfClient
         public MainWindow()
         {
             InitializeComponent();
-            WebBrowser.Address = OpenIdHelper.GetAuthorizationUrl();
             WebBrowser.FrameLoadStart += FrameLoadStart;
             _identityTokenHelper = new IdentityTokenHelper();
+            OpenIdHelper.GetAuthorizationUrl().ContinueWith(r =>
+            {
+                Dispatcher.BeginInvoke((Action) (() =>
+                {
+                    WebBrowser.Address = r.Result;
+                }));
+            });
         }
 
         #endregion
@@ -38,7 +44,6 @@ namespace WpfClient
             {
                 SetClaims(OpenIdHelper.GetTokens(url));
             }
-
         }
 
         private async Task SetClaims(Tokens tokens)
