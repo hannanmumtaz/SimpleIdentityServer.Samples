@@ -77,7 +77,7 @@ namespace MarketingClient.Controllers
         {
             return await _identityServerClientFactory.CreateTokenClient()
                 .UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
-                .UseClientCredentials("uma_authorization", "uma_protection", "website_api")
+                .UseClientCredentials("uma_authorization", "uma_protection", "website_api", "uma")
                 .ResolveAsync(Constants.OpenidConfigurationUrl);
         }
 
