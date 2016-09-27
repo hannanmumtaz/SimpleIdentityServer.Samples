@@ -51,9 +51,9 @@ namespace ClientApi
             app.UseStatusCodePages();
             var options = new UmaIntrospectionOptions
             {
-                OpenIdWellKnownConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration",
-                ResourcesUrl = "https://localhost:5444/api/vs/resources",
-                UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration"
+                OpenIdWellKnownConfigurationUrl = Constants.OpenIdWellKnownConfigurationUrl,
+                ResourcesUrl = Constants.ResourcesUrl,
+                UmaConfigurationUrl = Constants.UmaConfigurationUrl
             };
             app.UseAuthenticationWithUmaIntrospection(options);
             app.UseMvc();

@@ -23,11 +23,7 @@ namespace MarketingClient.Controllers
     public class RatingsController
     {
         #region Fields
-
-        private const string _clientId = "2ab0f69d-9160-413f-a79b-dae14dc3581e";
-
-        private const string _clientSecret = "b2423598-1c08-4958-b843-5db9b71222a8";
-
+        
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
         #endregion
@@ -80,9 +76,9 @@ namespace MarketingClient.Controllers
         private async Task<GrantedToken> GetAccessToken()
         {
             return await _identityServerClientFactory.CreateTokenClient()
-                .UseClientSecretBasicAuth(_clientId, _clientSecret)
+                .UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
                 .UseClientCredentials("uma_authorization", "uma_protection", "website_api")
-                .ResolveAsync("https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration");
+                .ResolveAsync(Constants.OpenidConfigurationUrl);
         }
 
         #endregion

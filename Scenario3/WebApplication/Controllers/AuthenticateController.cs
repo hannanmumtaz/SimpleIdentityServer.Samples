@@ -104,7 +104,7 @@ namespace WebApplication.Controllers
             // Set claims & create the cookie
             var principal = new ClaimsPrincipal(claimsIdentity);
             var authenticationManager = this.GetAuthenticationManager();
-            authenticationManager.SignInAsync(Constants.CookieWebApplicationName,
+            await authenticationManager.SignInAsync(Constants.CookieWebApplicationName,
                 principal,
                 new AuthenticationProperties
                 {

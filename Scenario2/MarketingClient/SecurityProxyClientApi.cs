@@ -7,6 +7,14 @@ namespace MarketingClient
 {
     public static class SecurityProxyClientApi
     {
+        /// <summary>
+        /// Get an RPT token to access to a protected resource.
+        /// <see cref="https://docs.kantarainitiative.org/uma/rec-uma-core.html#uma-bearer-token-profile" /> for more information about the statement.
+        /// </summary>
+        /// <param name="umaProtectionToken">Token valid for the scope uma_protection</param>
+        /// <param name="umaAuthorizationToken">Token valid for the scope uma_authorization</param>
+        /// <param name="resourceToken">Token valid for the scope website_api</param>
+        /// <returns>An rpt token</returns>
         public static async Task<string> GetRptToken(
             string umaProtectionToken,
             string umaAuthorizationToken,
@@ -15,9 +23,9 @@ namespace MarketingClient
             var factory = new SecurityProxyFactory();
             var opt = new SecurityOptions
             {
-                UmaConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5445/.well-known/uma-configuration",
-                OpenidConfigurationUrl = "https://lokit.westus.cloudapp.azure.com:5443/.well-known/openid-configuration",
-                RootManageApiUrl = "https://lokit.westus.cloudapp.azure.com:5444/api"
+                UmaConfigurationUrl = Constants.UmaConfigurationUrl,
+                OpenidConfigurationUrl = Constants.OpenidConfigurationUrl,
+                RootManageApiUrl = Constants.RootManageApiUrl
             };
             var proxy = factory.GetProxy(opt);
             try

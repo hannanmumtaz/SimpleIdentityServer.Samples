@@ -15,9 +15,6 @@ namespace WpfClient
 
         private readonly IIdentityTokenHelper _identityTokenHelper;
 
-        // This url should be stored in a configuration file
-        private const string ConfigurationUrl = "https://localhost:5443/.well-known/openid-configuration";
-
         #endregion
 
         #region Constructor
@@ -49,7 +46,7 @@ namespace WpfClient
             // 1. Extract claims from identity token. We assumed it's a JWS token
             var claims = await _identityTokenHelper.UnSignByResolution(
                 tokens.IdentityToken,
-                ConfigurationUrl);
+                Constants.OpenidConfigurationUrl);
             if (claims == null)
             {
                 return;

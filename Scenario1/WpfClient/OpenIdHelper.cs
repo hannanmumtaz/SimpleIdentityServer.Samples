@@ -12,17 +12,11 @@ namespace WpfClient
     
     internal static class OpenIdHelper
     {
-        #region Fields
-
-        private const string Url = "https://localhost:5443";
-
-        #endregion
-
         #region Public static methods
 
         public static string GetAuthorizationUrl()
         {
-            return $"{Url}/authorization?scope=openid role profile uma_authorization uma_protection website_api&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.ClientInfo.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientInfo.ClientId}&nonce=nonce&response_mode=query";
+            return $"{Constants.BaseOpenidUrl}/authorization?scope=openid role profile uma_authorization uma_protection website_api&state=75BCNvRlEGHpQRCT&redirect_uri={Constants.RedirectUrl}&response_type=id_token token&client_id={Constants.ClientId}&nonce=nonce&response_mode=query";
         }
 
         public static Tokens GetTokens(string url)
@@ -37,7 +31,7 @@ namespace WpfClient
 
         public static bool IsCallback(string url)
         {
-            return url.StartsWith(Constants.ClientInfo.RedirectUrl);
+            return url.StartsWith(Constants.RedirectUrl);
         }
 
         #endregion
