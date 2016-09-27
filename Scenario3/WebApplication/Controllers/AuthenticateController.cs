@@ -14,6 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication.Extensions;
+using WebApplication.ViewModels;
 
 namespace WebApplication.Controllers
 {
@@ -25,34 +26,42 @@ namespace WebApplication.Controllers
 
         private readonly IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory;
 
+        private readonly IIdentityServerClientFactory _identityServerClientFactory;
+
         public AuthenticateController(IJwsParser jwsParser)
         {
             _jwsParser = jwsParser;
             _identityServerUmaClientFactory = new IdentityServerUmaClientFactory();
             _identityServerUmaManagerClientFactory = new IdentityServerUmaManagerClientFactory();
+            _identityServerClientFactory = new IdentityServerClientFactory();
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var discovery = await _identityServerClientFactory.CreateDiscoveryClient()
+                .GetDiscoveryInformationAsync(Constants.OpenIdConfigurationUrl);
+            return View(new AuthenticateViewModel
+            {
+                AuthorizationEndPoint = discovery.AuthorizationEndPoint
+            });
         }
 
         public async Task<IActionResult> Callback()
         {
-            StringValues identityToken,
-                accessToken;
-            if (!Request.Query.TryGetValue("id_token", out identityToken))
+            var idToken = HttpContext.Request.Form.FirstOrDefault(f => f.Key == "id_token");
+            var accessToken = HttpContext.Request.Form.FirstOrDefault(f => f.Key == "access_token");
+            if (idToken.Equals(default(KeyValuePair<string, StringValues>)))
             {
                 return null;
             }
 
-            if (!Request.Query.TryGetValue("access_token", out accessToken))
+            if (accessToken.Equals(default(KeyValuePair<string, StringValues>)))
             {
                 return null;
             }
 
             // Add claims
-            var jwsPayload = _jwsParser.GetPayload(identityToken);
+            var jwsPayload = _jwsParser.GetPayload(idToken.Value);
             var claims = new List<Claim>();
             foreach (var claim in jwsPayload)
             {
@@ -64,10 +73,10 @@ namespace WebApplication.Controllers
             // Add permissions
             var introspectionClient = _identityServerUmaClientFactory.GetIntrospectionClient();
             var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
-            List<string> rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(identityToken.First(), 
-                accessToken.First(), 
-                accessToken.First(),
-                accessToken.First());
+            List<string> rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(idToken.Value, 
+                accessToken.Value.First(), 
+                accessToken.Value.First(),
+                accessToken.Value.First());
             foreach (string rpt in rpts)
             {
                 IntrospectionResponse introspectionResponse = await introspectionClient.GetIntrospectionByResolvingUrlAsync(rpt, Constants.UmaConfigurationUrl);
@@ -90,7 +99,7 @@ namespace WebApplication.Controllers
                         .SearchResources(new SearchResourceRequest
                         {
                             ResourceId = permission.ResourceSetId
-                        }, Constants.ResourcesUrl, accessToken.First());
+                        }, Constants.ResourcesUrl, accessToken.Value.First());
                     if (operations != null && operations.Any())
                     {
                         var operation = operations.First();
