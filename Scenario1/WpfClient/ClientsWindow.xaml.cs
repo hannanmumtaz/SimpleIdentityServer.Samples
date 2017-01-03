@@ -13,16 +13,9 @@ namespace WpfClient
 {
     public partial class ClientsWindow : Window
     {
-        #region Fields
-
         private readonly ClientsWindowViewModel _viewModel;
-
         private readonly Tokens _tokens;
-
-        #endregion
-
-        #region Constructor
-
+        
         public ClientsWindow(Tokens tokens)
         {
             InitializeComponent();
@@ -30,10 +23,6 @@ namespace WpfClient
             _viewModel = new ClientsWindowViewModel();
             Loaded += ClientsWindowLoaded;
         }
-
-        #endregion
-
-        #region Public methods
 
         private void ClientsWindowLoaded(object sender, RoutedEventArgs e)
         {
@@ -106,7 +95,5 @@ namespace WpfClient
                 _viewModel.Clients.Add(client);
             }
         }
-
-        #endregion
     }
 }

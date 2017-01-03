@@ -1,12 +1,17 @@
 ﻿using SimpleIdentityServer.Proxy;
+using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MarketingClient
 {
     public static class SecurityProxyClientApi
     {
+        private static IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory = new IdentityServerUmaManagerClientFactory();
+
         /// <summary>
         /// Get an RPT token to access to a protected resource.
         /// <see cref="https://docs.kantarainitiative.org/uma/rec-uma-core.html#uma-bearer-token-profile" /> for more information about the statement.
@@ -28,9 +33,17 @@ namespace MarketingClient
                 RootManageApiUrl = Constants.RootManageApiUrl
             };
             var proxy = factory.GetProxy(opt);
+            var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
+            var resources = await resourceClient
+                        .SearchResources(new SearchResourceRequest
+                        {
+                            IsExactUrl = true,
+                            AuthorizationPolicyFilter = AuthorizationPolicyFilters.All,
+                            Url = "resources/Apis/ClientApi/v1/ClientsController/Get"
+                        }, Constants.ResourcesUrl, resourceToken);
             try
             {
-                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
+                var result = await proxy.GetRpt(resources.First().ResourceSetId, umaProtectionToken, umaAuthorizationToken, new List<string>
                 {
                     "execute"
                 });

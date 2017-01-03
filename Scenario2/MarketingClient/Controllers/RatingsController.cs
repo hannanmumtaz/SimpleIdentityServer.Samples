@@ -15,35 +15,42 @@ namespace MarketingClient.Controllers
     public struct Rating
     {
         public string ClientName { get; set; }
-
         public int Value { get; set; }
     }
 
     [Route("api/ratings")]
     public class RatingsController
-    {
-        #region Fields
-        
+    {        
+        // NOTE : Store the RPT token into caching store.
+        private class RptToken
+        {
+            public string Value { get; set; }
+            public double SlidingExpTime { get; set; }
+            public DateTime CreateDateTime { get; set; }
+        }
+
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
-
-        #endregion
-
-        #region Constructor
+        private readonly static RptToken _rptToken = new RptToken();
 
         public RatingsController()
         {
             _identityServerClientFactory = new IdentityServerClientFactory();
         }
 
-        #endregion
-
-        #region Public methods
-
         public async Task<List<Rating>> Get()
         {
+            string rptToken = _rptToken.Value;
+            var expTime = _rptToken.CreateDateTime.AddMilliseconds(_rptToken.SlidingExpTime);
+            if (DateTime.UtcNow > expTime)
+            {
+                GrantedToken token = await GetAccessToken();
+                rptToken = await SecurityProxyClientApi.GetRptToken(token.AccessToken, token.AccessToken, token.AccessToken);
+                _rptToken.CreateDateTime = DateTime.UtcNow;
+                _rptToken.SlidingExpTime = 20000;
+                _rptToken.Value = rptToken;
+            }
+
             // Retrieve rpt token
-            GrantedToken token = await GetAccessToken();
-            string rptToken = await SecurityProxyClientApi.GetRptToken(token.AccessToken, token.AccessToken, token.AccessToken);
             // Get protected resource and returns ratings
             HttpClient httpClient = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage
@@ -69,18 +76,12 @@ namespace MarketingClient.Controllers
             return res;
         }
 
-        #endregion
-
-        #region Private methods
-
         private async Task<GrantedToken> GetAccessToken()
         {
-            return await _identityServerClientFactory.CreateTokenClient()
+            return await _identityServerClientFactory.CreateAuthSelector()
                 .UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
                 .UseClientCredentials("uma_authorization", "uma_protection", "website_api", "uma")
                 .ResolveAsync(Constants.OpenidConfigurationUrl);
         }
-
-        #endregion
     }
 }

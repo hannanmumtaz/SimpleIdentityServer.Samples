@@ -9,14 +9,11 @@ namespace WpfClient
     public class Tokens
     {
         public string AccessToken { get; set; }
-
         public string IdentityToken { get; set; }
     }
     
     internal static class OpenIdHelper
     {
-        #region Public static methods
-
         public static async Task<string> GetAuthorizationUrl()
         {
             var httpClient = new HttpClient();
@@ -48,7 +45,5 @@ namespace WpfClient
         {
             return url.StartsWith(Constants.RedirectUrl);
         }
-
-        #endregion
     }
 }

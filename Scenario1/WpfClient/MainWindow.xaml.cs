@@ -11,13 +11,7 @@ namespace WpfClient
 {
     public partial class MainWindow : Window
     {
-        #region Fields
-
         private readonly IIdentityTokenHelper _identityTokenHelper;
-
-        #endregion
-
-        #region Constructor
 
         public MainWindow()
         {
@@ -32,10 +26,6 @@ namespace WpfClient
                 }));
             });
         }
-
-        #endregion
-
-        #region Private methods
 
         private void FrameLoadStart(object sender, FrameLoadStartEventArgs e)
         {
@@ -100,7 +90,5 @@ namespace WpfClient
 
             Application.Current.Dispatcher.BeginInvoke(callback);
         }
-
-        #endregion
     }
 }
