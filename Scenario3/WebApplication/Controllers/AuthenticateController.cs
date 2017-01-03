@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.Client.DTOs.Responses;
 using SimpleIdentityServer.Core.Jwt.Signature;
 using SimpleIdentityServer.Uma.Common;
+using SimpleIdentityServer.Uma.Common.DTOs;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
@@ -21,11 +21,8 @@ namespace WebApplication.Controllers
     public class AuthenticateController : Controller
     {
         private readonly IJwsParser _jwsParser;
-
         private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
-
         private readonly IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory;
-
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
         public AuthenticateController(IJwsParser jwsParser)
@@ -73,21 +70,17 @@ namespace WebApplication.Controllers
             // Add permissions
             var introspectionClient = _identityServerUmaClientFactory.GetIntrospectionClient();
             var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
-            List<string> rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(idToken.Value, 
+            var rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(idToken.Value, 
                 accessToken.Value.First(), 
                 accessToken.Value.First(),
                 accessToken.Value.First());
-            foreach (string rpt in rpts)
+            var introspections = await introspectionClient.GetByResolution(new PostIntrospection
             {
-                IntrospectionResponse introspectionResponse = await introspectionClient.GetIntrospectionByResolvingUrlAsync(rpt, Constants.UmaConfigurationUrl);
-                if (introspectionResponse == null ||
-                    introspectionResponse.Permissions == null ||
-                    !introspectionResponse.Permissions.Any())
-                {
-                    continue;
-                }
-
-                foreach(var permission in introspectionResponse.Permissions)
+                Rpts = rpts
+            }, Constants.UmaConfigurationUrl);
+            foreach(var introspection in introspections)
+            {
+                foreach(var permission in introspection.Permissions)
                 {
                     var claimPermission = new Permission
                     {

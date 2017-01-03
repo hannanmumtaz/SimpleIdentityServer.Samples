@@ -14,7 +14,6 @@
 // limitations under the License.
 #endregion
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,19 +21,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Core.Jwt;
-using SimpleIdentityServer.UmaIntrospection.Authentication;
 
 namespace WebApplication
 {
     public class Startup
     {
-        #region Properties
-
         public IConfigurationRoot Configuration { get; set; }
-
-        #endregion
-
-        #region Public methods
 
         public Startup(IHostingEnvironment env)
         {
@@ -74,7 +66,5 @@ namespace WebApplication
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
-        #endregion
     }
 }

@@ -3,6 +3,7 @@ using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebApplication
@@ -11,7 +12,7 @@ namespace WebApplication
     {
         private static IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory = new IdentityServerUmaManagerClientFactory();
 
-        public static async Task<List<string>> GetRptTokenByRecursion(
+        public static async Task<IEnumerable<string>> GetRptTokenByRecursion(
             string idToken,
             string umaProtectionToken,
             string umaAuthorizationToken,
@@ -32,31 +33,12 @@ namespace WebApplication
                             AuthorizationPolicyFilter = AuthorizationPolicyFilters.All,
                             Url = Constants.WebApplicationResource
                         }, Constants.ResourcesUrl, resourceToken);
-            var res = new List<string>();
-            foreach (var resource in resources)
-            {
-                try
-                {
-                    var result = await proxy.GetRpt(resource.Url, idToken, umaProtectionToken, umaAuthorizationToken, resourceToken, new List<string>
+            return await proxy.GetRpts(resources.Select(r => r.ResourceSetId), idToken, umaProtectionToken, umaAuthorizationToken, new List<string>
                     {
                         "execute",
                         "read",
                         "write"
                     });
-                    if (string.IsNullOrWhiteSpace(result))
-                    {
-                        continue;
-                    }
-
-                    res.Add(result);
-                }
-                catch(Exception ex)
-                {
-                    continue;
-                }
-            }
-
-            return res;
         }
     }
 }
