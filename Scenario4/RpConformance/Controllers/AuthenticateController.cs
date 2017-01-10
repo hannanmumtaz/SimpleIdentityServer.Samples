@@ -1,8 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#region copyright
+// Copyright 2017 Habart Thierry
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SimpleIdentityServer.Client;
 using SimpleIdentityServer.Core.Jwt.Signature;
-using SimpleIdentityServer.UmaManager.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,90 +28,30 @@ namespace WebApplication.Controllers
     public class AuthenticateController : Controller
     {
         private readonly IJwsParser _jwsParser;
-        private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
-        private readonly IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
 
         public AuthenticateController(IJwsParser jwsParser)
         {
             _jwsParser = jwsParser;
-            _identityServerUmaClientFactory = new IdentityServerUmaClientFactory();
-            _identityServerUmaManagerClientFactory = new IdentityServerUmaManagerClientFactory();
             _identityServerClientFactory = new IdentityServerClientFactory();
         }
 
         public async Task<IActionResult> Callback()
         {
+            var defaultValue = default(KeyValuePair<string, StringValues>);
+            if (HttpContext.Request == null || HttpContext.Request.Form == null)
+            {
+                throw new ArgumentNullException("form");
+            }
+
             var idToken = HttpContext.Request.Form.FirstOrDefault(f => f.Key == "id_token");
             var accessToken = HttpContext.Request.Form.FirstOrDefault(f => f.Key == "access_token");
-            if (idToken.Equals(default(KeyValuePair<string, StringValues>)))
+            var code = HttpContext.Request.Form.FirstOrDefault(f => f.Key == "code");
+            if (idToken.Equals(defaultValue) && accessToken.Equals(defaultValue) && code.Equals(defaultValue))
             {
-                return null;
+                throw new ArgumentException("One of the parameter is null");
             }
-
-            if (accessToken.Equals(default(KeyValuePair<string, StringValues>)))
-            {
-                return null;
-            }
-
-
-            /*
-            // Add claims
-            var jwsPayload = _jwsParser.GetPayload(idToken.Value);
-            var claims = new List<Claim>();
-            foreach (var claim in jwsPayload)
-            {
-                claims.Add(new Claim(claim.Key, claim.Value.ToString()));
-            }
-
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            // Add permissions
-            var introspectionClient = _identityServerUmaClientFactory.GetIntrospectionClient();
-            var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
-            var rpts = await SecurityProxyWebApplication.GetRptTokenByRecursion(idToken.Value, 
-                accessToken.Value.First(), 
-                accessToken.Value.First(),
-                accessToken.Value.First());
-            var introspections = await introspectionClient.GetByResolution(new PostIntrospection
-            {
-                Rpts = rpts
-            }, Constants.UmaConfigurationUrl);
-            foreach(var introspection in introspections)
-            {
-                foreach(var permission in introspection.Permissions)
-                {
-                    var claimPermission = new Permission
-                    {
-                        ResourceSetId = permission.ResourceSetId,
-                        Scopes = permission.Scopes
-                    };
-
-                    var operations = await resourceClient
-                        .SearchResources(new SearchResourceRequest
-                        {
-                            ResourceId = permission.ResourceSetId
-                        }, Constants.ResourcesUrl, accessToken.Value.First());
-                    if (operations != null && operations.Any())
-                    {
-                        var operation = operations.First();
-                        claimPermission.Url = operation.Url;
-                    }
-
-                    claimsIdentity.AddPermission(claimPermission);
-                }
-            }
-
-            // Set claims & create the cookie
-            var principal = new ClaimsPrincipal(claimsIdentity);
-            var authenticationManager = this.GetAuthenticationManager();
-            await authenticationManager.SignInAsync(Constants.CookieWebApplicationName,
-                principal,
-                new AuthenticationProperties
-                {
-                    ExpiresUtc = DateTime.UtcNow.AddDays(7),
-                    IsPersistent = false
-                });*/
+            
             return RedirectToAction("Index", "Home");
         }
     }

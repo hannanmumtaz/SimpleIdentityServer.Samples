@@ -7,6 +7,7 @@
             public const string Jwks = "jwks";
         }
 
+        public const string BaseUrl = "https://rp.certification.openid.net:8080/simpleIdServer";
         public const string RootManagerApiUrl = "https://localhost:5444/api";
         public const string UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration";
         public const string BaseOpenIdUrl = "https://localhost:5443";
