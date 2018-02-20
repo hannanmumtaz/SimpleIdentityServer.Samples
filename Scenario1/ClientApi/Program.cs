@@ -10,11 +10,10 @@ namespace ClientApi
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls("http://*:5100")
+                .UseUrls(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
-
             host.Run();
         }
     }

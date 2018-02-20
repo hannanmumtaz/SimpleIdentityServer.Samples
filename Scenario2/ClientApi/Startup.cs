@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Uma.Authorization;
 using SimpleIdentityServer.UmaIntrospection.Authentication;
+using System.Collections.Generic;
 
 namespace ClientApi
 {
@@ -33,6 +34,7 @@ namespace ClientApi
                 {
                     // policy.Requirements.Add(new ConventionalUmaAuthorizationRequirementTst(null));
                     policy.AddConventionalUma();
+                    policy.AddResourceUma("resources/Apis/ClientApi/v1/ClientsController/Get", new List<string> { "execute" }); 
                     // options.AddPolicy("resourceSet", policy => policy.AddResourceUma("<url>", "<read>","<update>"));
                 });
             });

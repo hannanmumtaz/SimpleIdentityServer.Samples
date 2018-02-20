@@ -1,7 +1,6 @@
 ﻿using SimpleIdentityServer.Proxy;
 using SimpleIdentityServer.UmaManager.Client;
 using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

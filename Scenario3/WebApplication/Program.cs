@@ -25,17 +25,19 @@ namespace WebApplication
         public static void Main(string [] args)
         {
             // To launch the application : dotnet run --server.urls=http://*:5000
+            /*
             var configuration = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
-                .Build();
+                .Build();*/
             var host = new WebHostBuilder()
                 .UseKestrel(options =>
                 {
                     options.UseHttps("WebApplication.pfx");
                 })
+                .UseUrls(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseConfiguration(configuration)
+                // .UseConfiguration(configuration)
                 .UseStartup<Startup>()
                 .Build();
             host.Run();

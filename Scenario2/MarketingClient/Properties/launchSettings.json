@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "ClientApi": {
+    "MarketingClient": {
       "commandName": "Project",
-      "commandLineArgs": "http://localhost:5100",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

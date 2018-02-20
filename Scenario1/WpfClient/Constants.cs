@@ -2,7 +2,7 @@
 {
     internal static class Constants
     {
-        public const string ClientId = "9119015e-5817-42bb-8d7b-c50db0270da7";
+        public const string ClientId = "a75061d4-ee16-4fdf-bbc2-825752ae8f8c";
         public const string RedirectUrl = "https://client.com";
         public const string UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration";
         public const string BaseOpenidUrl = "https://localhost:5443";

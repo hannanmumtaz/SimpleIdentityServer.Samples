@@ -1,12 +1,17 @@
 ﻿using SimpleIdentityServer.Proxy;
+using SimpleIdentityServer.UmaManager.Client;
+using SimpleIdentityServer.UmaManager.Client.DTOs.Requests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WpfClient
 {
     public static class SecurityProxyClientApi
     {
+        private static IIdentityServerUmaManagerClientFactory _identityServerUmaManagerClientFactory = new IdentityServerUmaManagerClientFactory();
+
         /// <summary>
         /// Get an RPT token to access to a protected resource.
         /// <see cref="https://docs.kantarainitiative.org/uma/rec-uma-core.html#uma-bearer-token-profile" /> for more information about the statement.
@@ -31,7 +36,16 @@ namespace WpfClient
             });
             try
             {
-                var result = await proxy.GetRpt("resources/Apis/ClientApi/v1/ClientsController/Get", idToken, umaProtectionToken, umaAuthorizationToken, resourceToken, new List <string>
+                var resourceClient = _identityServerUmaManagerClientFactory.GetResourceClient();
+                var resources = await resourceClient
+                            .SearchResources(new SearchResourceRequest
+                            {
+                                IsExactUrl = true,
+                                AuthorizationPolicyFilter = AuthorizationPolicyFilters.All,
+                                Url = "resources/Apis/ClientApi/v1/ClientsController/Get"
+                            }, "https://localhost:5444/api/vs/resources", resourceToken);
+                var resourceSetId = resources.First().ResourceSetId;
+                var result = await proxy.GetRpt(resourceSetId, idToken, umaProtectionToken, umaAuthorizationToken, new List <string>
                 {
                     "execute"
                 });
