@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFrameworks>net46;netcoreapp1.0</TargetFrameworks>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.0.2" />
+	<PackageReference Include="SimpleIdentityServer.Uma.Authorization" Version="1.0.0-1" />
+	<PackageReference Include="SimpleIdentityServer.UmaIntrospection.Authentication" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Client" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Uma.Client" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Authentication.Common" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Uma.Common" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.UmaManager.Client" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Core.Common" Version="1.0.0-1" />
+    <PackageReference Include="SimpleIdentityServer.Core.Jwt" Version="1.0.0-1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="WebApplication.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

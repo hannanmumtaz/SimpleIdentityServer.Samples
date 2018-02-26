@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WebApplication": {
+      "commandName": "Project",
+      "commandLineArgs": "https://*:5106"
+    }
+  }
+}

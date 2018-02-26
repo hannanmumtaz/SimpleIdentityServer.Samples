@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Resources";
+}
+
+<div>
+    <form action="@Url.Action("GiveAccess", "Resources")" method="post">
+        <label>Grant access to :</label>
+        <input type="text" class="form-control" name="Id" />
+        <button type="submit" class="btn btn-primary">Authorize</button>
+    </form>
+</div>
