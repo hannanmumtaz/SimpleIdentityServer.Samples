@@ -65,6 +65,10 @@ namespace MedicalWebsite.Controllers
                 var rpt = await GetRpt("read");
                 var client = new SamplesClient();
                 var result = await client.GetSamples(subject, rpt.Key.Rpt);
+                viewModel = new SampleViewModel
+                {
+                    Id = result.Id
+                };
                 viewModel.Id = result.Id;
             }
             catch(Exception)

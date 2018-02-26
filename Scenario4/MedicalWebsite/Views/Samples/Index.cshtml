@@ -15,10 +15,12 @@
         var userName = user.GetGivenName() ?? "Unknown";
         <h1>Welcome @userName</h1>
         <div class="card">
-            <div class="card-block">
-                <h4 class="card-title">@Model.Id</h4>
-                <p class="card-text"><img src="~/img/viralload.jpg" /></p>
+            <div class="card-header">
+                Sample : @Model.Id
             </div>
-         </div>        
+            <div class="card-block">
+                <img src="~/img/viralload.jpg" />
+            </div>
+        </div>        
     }
 </div>

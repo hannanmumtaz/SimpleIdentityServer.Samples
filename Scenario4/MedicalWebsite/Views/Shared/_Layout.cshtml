@@ -30,7 +30,7 @@
                     var role = user.GetRole();
                     <ul class="nav navbar-nav navbar-right">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">Welcome @userName (@role)</a>
+                            <a href="#" class="nav-link">Welcome @userName</a>
                         </li>
                         @if (role == "patient")
                         {
@@ -44,7 +44,7 @@
                         @if (role =="doctor")
                         {
                             <li class="nav-item">
-                                <a href="@Url.Content("~/Samples/Display")" class="nav-link">View the samples of the patient</a>
+                                <a href="@Url.Content("~/Samples/Display?id=patient")" class="nav-link">View the samples of Mr.Patient</a>
                             </li>
                         }
                         <li class="nav-item">

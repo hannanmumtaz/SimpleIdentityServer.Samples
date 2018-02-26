@@ -20,7 +20,7 @@ namespace MedicalWebsite.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GiveAccess([FromBody] AccessViewModel accessViewModel)
+        public async Task<IActionResult> GiveAccess(AccessViewModel accessViewModel)
         {
             if (accessViewModel == null)
             {
