@@ -16,13 +16,15 @@
 
 using MedicalWebsite.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace MedicalWebsite.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseViewModel
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            await GetViewModel();
             return View();
         }
 

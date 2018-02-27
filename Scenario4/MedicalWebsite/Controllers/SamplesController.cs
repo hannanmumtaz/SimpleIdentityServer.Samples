@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 
 namespace MedicalWebsite.Controllers
 {
-    public class SamplesController : Controller
+    public class SamplesController : BaseViewModel
     {
         public SamplesController() { }
 
@@ -47,6 +47,7 @@ namespace MedicalWebsite.Controllers
             {
                 Id = result.Id
             };
+            await GetViewModel();
             return View(viewModel);
         }
 
@@ -92,7 +93,7 @@ namespace MedicalWebsite.Controllers
         {
             var identityServerClientFactory = new IdentityServerClientFactory();
             return await identityServerClientFactory.CreateAuthSelector()
-                .UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
+                .UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
                 .UseClientCredentials("uma", "uma_protection", "uma_authorization", "website_api")
                 .ResolveAsync(Constants.OpenIdConfigurationUrl);
         }

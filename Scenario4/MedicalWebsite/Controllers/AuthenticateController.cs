@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MedicalWebsite.Controllers
 {
-    public class AuthenticateController : Controller
+    public class AuthenticateController : BaseViewModel
     {
         private readonly IJwsParser _jwsParser;
         private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;

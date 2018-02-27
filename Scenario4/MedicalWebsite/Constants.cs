@@ -7,7 +7,6 @@
         public const string ClientId = "MedicalWebsite";
         public const string ClientSecret = "MedicalWebsite";
         public const string ApiUrl = "http://localhost:5107";
-        public const string AuthorizationEdp = "https://localhost:5443/authorization";
         public const string RootManagerApiUrl = "https://localhost:5444/api";
         public const string UmaConfigurationUrl = "https://localhost:5445/.well-known/uma-configuration";
         public const string BaseOpenIdUrl = "https://localhost:5443";

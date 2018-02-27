@@ -3,7 +3,7 @@
 
 @{
     var user = await this.Context.GetAuthenticatedUser(MedicalWebsite.Constants.CookieName);
-    string href = $"{MedicalWebsite.Constants.AuthorizationEdp}?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri={MedicalWebsite.Constants.Callback}&response_type=id_token&client_id={MedicalWebsite.Constants.ClientId}&nonce=nonce&response_mode=form_post";
+    string href = $"{ViewData["AuthorizationUrl"]}?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri={MedicalWebsite.Constants.Callback}&response_type=id_token&client_id={MedicalWebsite.Constants.ClientId}&nonce=nonce&response_mode=form_post";
 }
 
 <!DOCTYPE html>

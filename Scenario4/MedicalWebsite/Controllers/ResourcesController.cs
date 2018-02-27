@@ -12,10 +12,11 @@ using System.Threading.Tasks;
 
 namespace MedicalWebsite.Controllers
 {
-    public class ResourcesController : Controller
+    public class ResourcesController : BaseViewModel
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            await GetViewModel();
             return View();
         }
 
@@ -79,7 +80,7 @@ namespace MedicalWebsite.Controllers
         {
             var identityServerClientFactory = new IdentityServerClientFactory();
             return await identityServerClientFactory.CreateAuthSelector()
-                .UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
+                .UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
                 .UseClientCredentials("uma", "uma_protection", "uma_authorization", "website_api")
                 .ResolveAsync(Constants.OpenIdConfigurationUrl);
         }
