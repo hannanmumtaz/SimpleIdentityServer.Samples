@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>OpenIdMigration.Common</AssemblyName>
+    <PackageId>OpenIdMigration.Common</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>  
+    <PackageReference Include="SimpleIdentityServer.EF" Version="3.0.0-rc7" />
+    <PackageReference Include="SimpleIdentityServer.Core.Jwt" Version="3.0.0-rc7" />
+    <PackageReference Include="SimpleIdentityServer.Core" Version="3.0.0-rc7" />
+  </ItemGroup>
+</Project>
