@@ -23,7 +23,10 @@ namespace OpenIdMigration.Common
             {
                 context.SaveChanges();
             }
-            catch { }
+            catch(Exception ex)
+            {
+                string s = "";
+            }
         }
 
         private static void InsertClaims(SimpleIdentityServerContext context)
@@ -108,6 +111,34 @@ namespace OpenIdMigration.Common
                         IsDisplayedInConsent = true,
                         Description = "access to the openid scope",
                         Type = ScopeType.ProtectedApi
+                    },
+                    new Scope
+                    {
+                        Name = "profile",
+                        IsExposed = true,
+                        IsOpenIdScope = true,
+                        Description = "Access to the profile",
+                        ScopeClaims = new List<ScopeClaim>
+                        {
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Name },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.FamilyName },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.GivenName },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.MiddleName },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.NickName },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.PreferredUserName },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Profile },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Picture },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.WebSite },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Gender },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.BirthDate },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.ZoneInfo },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Locale },
+                            new ScopeClaim { ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.UpdatedAt }
+                        },
+                        Type = ScopeType.ResourceOwner,
+                        IsDisplayedInConsent = true,
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     },
                     new Scope
                     {
@@ -442,20 +473,20 @@ namespace OpenIdMigration.Common
                             },
                             new ClientScope
                             {
-                                ScopeName = "scim"
+                                ScopeName = "profile"
                             },
                             new ClientScope
                             {
                                 ScopeName = "role"
                             }
                         },
-                        ClientName = "Reporting dashboard",
+                        ClientName = "Website",
                         TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
-                        LogoUri = "https://updraftplus.com/wp-content/uploads/2013/02/Reporting.png",
+                        LogoUri = "",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
-                        RedirectionUrls = "http://bcn-dashboard.projectschweitzer.net/callback,https://dashboard.projectschweitzer.net/callback,http://localhost:4200/callback",
+                        RedirectionUrls = "http://localhost:64950/callback",
                         GrantTypes = "0,1,2",
                         ResponseTypes = "0,1,2"
                     }
