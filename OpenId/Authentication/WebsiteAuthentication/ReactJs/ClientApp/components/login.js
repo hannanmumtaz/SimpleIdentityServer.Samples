@@ -1,5 +1,5 @@
 ﻿import React, { Component } from "react";
-import { Grid, Paper, Button, Typography } from 'material-ui';
+import { Grid, Paper, Button, Typography, Table, TableHead, TableBody, TableRow, TableCell } from 'material-ui';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import { withStyles } from 'material-ui/styles';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -108,6 +108,7 @@ class Login extends Component {
                 }
             }
 
+            console.log('coucou');
             AppDispatcher.dispatch({
                 actionName: Constants.events.USER_LOGGED_IN,
                 data: user
@@ -133,32 +134,99 @@ class Login extends Component {
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <Paper className={classes.padding}>
-                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
-                            <form onSubmit={self.handleLocalAuthenticate}>
-                                {/* Login */}
-                                <FormControl fullWidth={true} className={classes.margin}>
-                                    <InputLabel>Login</InputLabel>
-                                    <Input value={self.state.login} name="login" onChange={self.handleChangeProperty} />
-                                    <FormHelperText>Enter your login</FormHelperText>
-                                </FormControl>
-                                {/* Password */}
-                                <FormControl fullWidth={true} className={classes.margin}>
-                                    <InputLabel>Password</InputLabel>
-                                    <Input value={self.state.password} name="password" type="password" onChange={self.handleChangeProperty} />
-                                    <FormHelperText>Enter your password</FormHelperText>
-                                </FormControl>
-                                <Button type="submit" color="primary" variant="raised">Submit</Button>
-                            </form>
-                        )}
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={4}>
                     <Paper className={classes.padding}>
                         {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
                             <div>
+                                <Typography variant="subheading">
+                                    Password workflow
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>Password workflow</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the access token is expired</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is disconnected by removing the item stored in the session storage</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                                <form onSubmit={self.handleLocalAuthenticate}>
+                                    {/* Login */}
+                                    <FormControl fullWidth={true} className={classes.margin}>
+                                        <InputLabel>Login</InputLabel>
+                                        <Input value={self.state.login} name="login" onChange={self.handleChangeProperty} />
+                                        <FormHelperText>Enter your login</FormHelperText>
+                                    </FormControl>
+                                    {/* Password */}
+                                    <FormControl fullWidth={true} className={classes.margin}>
+                                        <InputLabel>Password</InputLabel>
+                                        <Input value={self.state.password} name="password" type="password" onChange={self.handleChangeProperty} />
+                                        <FormHelperText>Enter your password</FormHelperText>
+                                    </FormControl>
+                                    <Button type="submit" color="primary" variant="raised">Submit</Button>
+                                </form>
+                            </div>
+                        )}
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Paper className={classes.padding}>
+                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
+                            <div>
+                                <Typography variant="subheading">
+                                    Implicit workflow
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>Implicit workflow</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the access token is expired</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is disconnected by removing the item stored in the session storage</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
                                 <Button color="primary" variant="raised" onClick={self.handleExternalAuthenticate}>External authentication without session</Button>
+                            </div>
+                        )}
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Paper className={classes.padding}>
+                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
+                            <div>
+                                <Typography variant="subheading">
+                                    Implicit workflow (with session)
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>Implicit workflow</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the cookie of the OPENID server has expired or is invalid</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is redirected to the /end_session web page to remove the cookie</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
                                 <Button color="primary" variant="raised" onClick={self.handleExternalAuthenticateWithSession}>External authentication with session</Button>
                             </div>
                         )}

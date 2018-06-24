@@ -3,40 +3,36 @@ var EventEmitter = require('events').EventEmitter;
 var $ = require('jquery');
 import Constants from '../constants';
 
-var _user = {};
 const localStorageName = 'sid-webauthentication';
 
 function loadUser(user) {
-    _user = user;
-    window.localStorage.setItem(localStorageName, JSON.stringify(_user));
+    window.localStorage.setItem(localStorageName, JSON.stringify(user));
 }
 
 function resetUser() {
-    _user = {};
     window.localStorage.removeItem(localStorageName);
 }
 
-function restoreUser() {
+function getUser() {
     var json = window.localStorage.getItem(localStorageName);
-    if (!localStorageName) {
-        return;
+    if (!json) {
+        return {};
     }
 
-    _user = JSON.parse(json);
+    return JSON.parse(json);
 }
-
-restoreUser();
 
 var UserStore = $.extend({}, EventEmitter.prototype, {
     getUser() {
-        return _user;
+        return getUser();
     },
     getUserInfo() {
-        if (!_user['id_token']) {
+        var user = getUser();
+        if (!user['id_token']) {
             return null;
         }
 
-        var idToken = _user['id_token'];
+        var idToken = user['id_token'];
         return JSON.parse(window.atob(idToken.split('.')[1]));
     },
     emitLogin: function () {

@@ -487,6 +487,7 @@ namespace OpenIdMigration.Common
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:64950/callback",
+                        PostLogoutRedirectUris = "http://localhost:64950/end_session",
                         GrantTypes = "0,1,2",
                         ResponseTypes = "0,1,2"
                     }

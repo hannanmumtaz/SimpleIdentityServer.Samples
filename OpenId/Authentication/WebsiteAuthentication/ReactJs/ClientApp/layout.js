@@ -11,11 +11,13 @@ class Layout extends Component {
         super(props);
         this._sessionFrame = null;
         this._interval = null;
+        this._checkSession = false;
         this.navigate = this.navigate.bind(this);
         this.handleUserLogin = this.handleUserLogin.bind(this);
         this.handleUserLogout = this.handleUserLogout.bind(this);
         this.handleClickLogout = this.handleClickLogout.bind(this);
         this.handleCheckSession = this.handleCheckSession.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
         this.state = {
             checkSession : false,
             isLoggedIn: false
@@ -36,6 +38,16 @@ class Layout extends Component {
         if (!withSession) {
             // CHECK THE ACCESS TOKEN VALIDITY.
             self._interval = setInterval(function () {
+                user = UserStore.getUser();
+                if (!user['access_token']) {
+                    clearInterval(self._interval);
+                    self._interval = null;
+                    AppDispatcher.dispatch({
+                        actionName: Constants.events.USER_LOGGED_OUT
+                    });
+                    return;
+                }
+
                 var accessToken = user['access_token'];
                 var accessTokenPayload = JSON.parse(window.atob(accessToken.split('.')[1]));
                 var expirationTime = moment.unix(accessTokenPayload['exp']);
@@ -58,33 +70,60 @@ class Layout extends Component {
     }
 
     handleUserLogout() {
-        this.setState({
-            isLoggedIn: false
+        var self = this;
+        if(self._interval !== null) {
+            clearInterval(self._interval);
+            self._interval = null;
+        }
+
+        self.setState({
+            isLoggedIn: false,
+            checkSession: false
         });
+        self._checkSession = false;
+        window.removeEventListener("message", self.handleMessage, false);
     }
 
-    handleClickLogout() {        
-        AppDispatcher.dispatch({
-            actionName: Constants.events.USER_LOGGED_OUT
-        });
+    handleClickLogout() {
+        var user = UserStore.getUser();
+        var withSession = user['with_session'];
+        if (!withSession)
+        {
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_OUT
+            });
+            return;
+        }   
+
+        var url = "http://localhost:60000/end_session?post_logout_redirect_uri=http://localhost:64950/end_session&id_token_hint="+ user['id_token'];
+        var w = window.open(url, '_blank');
+        var interval = setInterval(function() {
+            if (w.closed) {
+                clearInterval(interval);
+                return;
+            }
+
+            var href = w.location.href;
+            console.log(href);
+            if (href === "http://localhost:64950/end_session") {                
+                clearInterval(interval);
+                w.close();
+                AppDispatcher.dispatch({
+                    actionName: Constants.events.USER_LOGGED_OUT
+                });
+            }
+        }); 
     }
 
     handleCheckSession() {
         // CHECK THE SESSION
         var self = this;
-        if (self._interval !== null) {
+        if (self._checkSession) {
             return;
         }
 
-        var evt = window.addEventListener("message", function (e) {
-            if (e.data !== 'unchanged') {
-                AppDispatcher.dispatch({
-                    actionName: Constants.events.USER_LOGGED_OUT
-                });
-                self._interval = null;
-                self.props.history.push('/');
-            }
-        }, false);
+        self._checkSession = true;
+        window.addEventListener("message", self.handleMessage, false);
         var originUrl = window.location.protocol + "//" + window.location.host;
         self._interval = setInterval(function() { 
             var session = UserStore.getUser();
@@ -98,8 +137,18 @@ class Layout extends Component {
             var win = self._sessionFrame.contentWindow;
             win.postMessage(message, "http://localhost:60000");
         }, 3*1000);
-
     }
+
+    handleMessage(e) {
+        var self = this;
+        if (e.data === 'error' || e.data === 'changed') {
+            console.log(e.data);
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_OUT
+            });
+            self.props.history.push('/');
+        }
+    }    
 
     render() {
         var self = this;
@@ -137,11 +186,6 @@ class Layout extends Component {
         UserStore.addLogoutListener(self.handleUserLogout);
     }
 
-    componentWillUnmount() {
-        var self = this;
-        UserStore.removeLoginListener(self.handleUserLogin);
-        UserStore.removeLogoutistener(self.handleUserLogout);
-    }
 }
 
 export default withRouter(Layout);
