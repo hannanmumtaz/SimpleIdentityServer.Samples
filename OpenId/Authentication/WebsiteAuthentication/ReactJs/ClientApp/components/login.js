@@ -2,6 +2,7 @@
 import { Grid, Paper, Button, Typography, Table, TableHead, TableBody, TableRow, TableCell } from 'material-ui';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import { withStyles } from 'material-ui/styles';
+import { WebsiteService } from '../services';
 import Input, { InputLabel } from 'material-ui/Input';
 var AppDispatcher = require('../appDispatcher');
 import Constants from '../constants';
@@ -41,6 +42,26 @@ class Login extends Component {
         var self = this;
         self.setState({
             isAuthenticateLoading: true
+        });
+        var request = {
+            login: self.state.login,
+            password: self.state.password
+        };
+        WebsiteService.authenticate(request).then(function (result) {
+            var user = result;
+            user['with_session'] = false;
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_IN,
+                data: user
+            });
+            self.setState({
+                isAuthenticateLoading: false
+            });
+            self.props.history.push('/');
+        }).catch(function () {
+            self.setState({
+                isAuthenticateLoading: false
+            });
         });
     }
 
@@ -97,8 +118,7 @@ class Login extends Component {
             var user = {
                 id_token: idToken,
                 access_token: accessToken,
-                with_session: withSession,
-                with_local_account: false
+                with_session: withSession
             };
             if (withSession) {
                 var sessionState = getParameterByName('session_state', href);
@@ -107,8 +127,7 @@ class Login extends Component {
                     user['session_state'] = sessionState;
                 }
             }
-
-            console.log('coucou');
+            
             AppDispatcher.dispatch({
                 actionName: Constants.events.USER_LOGGED_IN,
                 data: user

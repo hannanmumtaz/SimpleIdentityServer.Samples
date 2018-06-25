@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
+    <PackageReference Include="SimpleIdentityServer.Client" Version="3.0.0-rc7" />
   </ItemGroup>  
 
   <ItemGroup>

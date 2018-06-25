@@ -104,7 +104,6 @@ class Layout extends Component {
             }
 
             var href = w.location.href;
-            console.log(href);
             if (href === "http://localhost:64950/end_session") {                
                 clearInterval(interval);
                 w.close();

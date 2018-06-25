@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleIdentityServer.Client;
 
 namespace WebsiteAuthentication.ReactJs
 {
@@ -17,6 +17,7 @@ namespace WebsiteAuthentication.ReactJs
         {
             RegisterServices(services);
             services.AddMvc();
+            services.AddIdServerClient();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
