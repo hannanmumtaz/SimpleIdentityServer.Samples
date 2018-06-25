@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "86151c2557c894ecfedb"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a29d81ba2457bca967a1"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -46548,6 +46548,8 @@ var Login = function (_Component) {
         value: function externalAuthentication(withSession) {
             var clientId = 'Website';
             var callbackUrl = 'http://localhost:64950/callback';
+            var stateValue = '75BCNvRlEGHpQRCT';
+            var nonceValue = 'nonce';
             var self = this;
             var getParameterByName = function getParameterByName(name, url) {
                 if (!url) url = window.location.href;
@@ -46562,7 +46564,7 @@ var Login = function (_Component) {
             self.setState({
                 isLoading: true
             });
-            var url = "http://localhost:60000/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri=" + callbackUrl + "&response_type=id_token token&client_id=" + clientId + "&nonce=nonce&response_mode=query";
+            var url = "http://localhost:60000/authorization?scope=openid role profile&state=" + stateValue + "&redirect_uri=" + callbackUrl + "&response_type=id_token token&client_id=" + clientId + "&nonce=" + nonceValue + "&response_mode=query";
             var w = window.open(url, '_blank');
             var interval = setInterval(function () {
                 if (w.closed) {
@@ -46573,7 +46575,17 @@ var Login = function (_Component) {
                 var href = w.location.href;
                 var accessToken = getParameterByName('access_token', href);
                 var idToken = getParameterByName('id_token', href);
+                var state = getParameterByName('state', href);
                 if (!idToken && !accessToken) {
+                    return;
+                }
+
+                if (state !== stateValue) {
+                    return;
+                }
+
+                var payload = JSON.parse(window.atob(idToken.split('.')[1]));
+                if (payload.nonce !== nonceValue) {
                     return;
                 }
 

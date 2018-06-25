@@ -84,6 +84,8 @@ class Login extends Component {
     externalAuthentication(withSession) {
         const clientId = 'Website';
         const callbackUrl = 'http://localhost:64950/callback';
+        const stateValue = '75BCNvRlEGHpQRCT';
+        const nonceValue = 'nonce';
         var self = this;
         var getParameterByName = function (name, url) {
             if (!url) url = window.location.href;
@@ -98,9 +100,9 @@ class Login extends Component {
         self.setState({
             isLoading: true
         });
-        var url = "http://localhost:60000/authorization?scope=openid role profile&state=75BCNvRlEGHpQRCT&redirect_uri="
+        var url = "http://localhost:60000/authorization?scope=openid role profile&state="+stateValue+"&redirect_uri="
             + callbackUrl
-            + "&response_type=id_token token&client_id=" + clientId + "&nonce=nonce&response_mode=query";
+            + "&response_type=id_token token&client_id=" + clientId + "&nonce=" + nonceValue +"&response_mode=query";
         var w = window.open(url, '_blank');
         var interval = setInterval(function () {
             if (w.closed) {
@@ -111,7 +113,17 @@ class Login extends Component {
             var href = w.location.href;
             var accessToken = getParameterByName('access_token', href);
             var idToken = getParameterByName('id_token', href);
+            var state = getParameterByName('state', href);
             if (!idToken && !accessToken) {
+                return;
+            }
+
+            if (state !== stateValue) {
+                return;
+            }
+            
+            var payload = JSON.parse(window.atob(idToken.split('.')[1]));
+            if (payload.nonce !== nonceValue) {
                 return;
             }
 

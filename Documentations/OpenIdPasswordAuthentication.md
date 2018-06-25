@@ -4,7 +4,7 @@
 
 The objective of this tutorial is to offer the possibility to your end-users to authenticate with their credentials in your ASP.NET CORE REACT.JS website. The grant-type used is the OAUTH2.0 [password](https://tools.ietf.org/html/rfc6749#section-4.3). 
 
-![openidGrantTypePassword](openidGrantTypePassword.png)
+![images\openidGrantTypePasswordWorkflow](images\openidGrantTypePasswordWorkflow.png)
 
 1. The REACT.JS tries to get an access token by passing the login and password of the end-user.
 
@@ -92,17 +92,26 @@ Add a new **Authenticate** method into the HomeController which accepts an Authe
 
 #### REACT.JS
 
+##### Authenticate the end-user
+
 Create a new login page into your REACT.JS application and add a form with two fields  (login and password) and a submit button. When the form is submitted by the end-user then an HTTP POST request  is executed against the target url **/Home/Authenticate** and the login & password is passed into the HTTP Body.
 
-Structure of the HTTP request
+**HTTP HEADER**
 
-| Key         | Value                             |
-| ----------- | --------------------------------- |
-| Target url  | /Home/Authenticate                |
-| HTTP BODY   | { login: "<login>", "<password>"} |
-| Method Type | HTTP POST                         |
+| Key         | Value              |
+| ----------- | ------------------ |
+| Target url  | /Home/Authenticate |
+| Method Type | HTTP POST          |
 
-Once the response is received, use the web storage API to store the result. The code below is used to check the validity :
+**HTTP BODY**
+
+| Key       | Value                             |
+| --------- | --------------------------------- |
+| HTTP BODY | { login: "<login>", "<password>"} |
+
+##### Check the session
+
+Once the response is received, use the web storage API to store the result. Use the code below to check the session validity :
 
 ```javascript
 import moment from 'moment';
@@ -129,14 +138,16 @@ import moment from 'moment';
 
 ## Result
 
-The run the sample application please follow the steps below :
+To run the sample application please follow the steps below :
 
 1. Fetch the [samples projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
 
-2. Open the folder /SimpleIdentityServer.Samples/Migrations/<database> corresponding to the database you're using. By default the database used is **idserver**, if you're using a different one then open the **appsetting.json** and update the connectionString.
+2. Open the folder /SimpleIdentityServer.Samples/Migrations/<database> corresponding to the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is **idserver**, if you're using a different one then open the **appsetting.json** and update the connectionString.
 
 3. Launch the command  **dotnet run -f net461 / netcoreapp2.0**. At the end of the execution the database will be migrated and the tables will be populated.
 
-4. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**. Two new 
+4. Before starting the OPENID server ensure that the environment variable **SID_MODULE** exists and its value is set to a directory.
 
-5. When 
+5. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**. 
+
+![images\openidGrantTypePasswordResult](images\openidGrantTypePasswordResult.png)
