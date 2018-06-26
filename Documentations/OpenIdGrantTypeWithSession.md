@@ -2,11 +2,9 @@
 
 ## Purpose
 
-The objective of this tutorial is to offer the possibility to your end-users to authenticate against your website with their local or external accounts. The difference with the previous tutorial is the lifecycle of the session is not managed by the website but by the OPENID provider via the [session management mechanism](http://openid.net/specs/openid-connect-session-1_0.html). 
+The objective of this tutorial is to offer the possibility to the end-users to authenticate against an ASP.NET CORE website with their local or external accounts. The difference with the previous tutorial is the lifecycle of the session is not managed by the website but by the OPENID provider via the [session management mechanism](http://openid.net/specs/openid-connect-session-1_0.html). 
 
 ![images\openidGrantTypeImplicitWithSessionWorkflow](images\openidGrantTypeImplicitWithSessionWorkflow.png)
-
-
 
 1. The REACT.JS application redirects the user-agent to the authorization endpoint
 
@@ -59,11 +57,11 @@ Append the following queries to your authorization url :
 | Query         | Value                           |
 | ------------- | ------------------------------- |
 | scope         | role profile                    |
-| state         | <generate a random value>       |
+| state         | ```generate a random value```   |
 | redirect_uri  | http://localhost:64950/callback |
 | response_type | id_token token                  |
 | ClientId      | Website                         |
-| nonce         | <generate a random value>       |
+| nonce         | ```generate a random value```   |
 | response_mode | query                           |
 
 At the end the authorization url should look like to something like this :
@@ -76,51 +74,71 @@ Once the authorization url is built then the tab can be opened and the REACT.JS 
 
 ```javascript
 const clientId = 'Website';
-        const callbackUrl = 'http://localhost:64950/callback';
-        const stateValue = '75BCNvRlEGHpQRCT';
-        const nonceValue = 'nonce';
-        var self = this;
-        var getParameterByName = function (name, url) {
-            if (!url) url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " "));
-        };
-        var url = "http://localhost:60000/authorization?scope=openid role profile&state="+stateValue+"&redirect_uri="
-            + callbackUrl
-            + "&response_type=id_token token&client_id=" + clientId + "&nonce=" + nonceValue +"&response_mode=query";var w = window.open(url, '_blank'); // Build the authorization url.
-        var interval = setInterval(function () {
-            if (w.closed) {
-                clearInterval(interval);
-                return;
-            }
+const callbackUrl = 'http://localhost:64950/callback';
+const stateValue = '75BCNvRlEGHpQRCT';
+const nonceValue = 'nonce';
+var self = this;
+// Get the query from the url.
+var getParameterByName = function (name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+  results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
+// 1. Build the authorization url.
+var url = "http://localhost:60000/authorization?scope=openid role "+                    "profile&state="+stateValue+"&redirect_uri="
+ + callbackUrl
+ + "&response_type=id_token token"
+ + "&client_id=" + clientId + "&nonce=" + nonceValue +"&response_mode=query";
+// 2. Open the authorization webpage into a new tab.
+var w = window.open(url, '_blank');
+var interval = setInterval(function () {
+    if (w.closed) {
+      clearInterval(interval);
+    return;
+  }
 
-            var href = w.location.href;
-            var accessToken = getParameterByName('access_token', href);
-            var idToken = getParameterByName('id_token', href);
-            var state = getParameterByName('state', href);          
-            var sessionState = getParameterByName('session_state', href);
-            if (!idToken && !accessToken) {
-                return;
-            }
+     // 3. Get the access, identity tokens, state and session state from the callback url.
+  var href = w.location.href;
+  var accessToken = getParameterByName('access_token', href);
+  var idToken = getParameterByName('id_token', href);
+  var state = getParameterByName('state', href);          
+  var sessionState = getParameterByName('session_state', href);
+  if (!idToken && !accessToken) {
+      return;
+  }
 
-            if (state !== stateValue) { // Check the state
-                return;
-            }
+  // 4. Check the state.
+  if (state !== stateValue) {
+      return;
+  }
 
-            var payload = JSON.parse(window.atob(idToken.split('.')[1]));
-            if (payload.nonce !== nonceValue) { // Check the nonce.
-                return;
-            }
-          // The end-user is authenticated.
-          clearInterval(interval);
-        });
+   // 5. Check the nonce.
+  var payload = JSON.parse(window.atob(idToken.split('.')[1]));
+  if (payload.nonce !== nonceValue) {
+      return;
+  }
+
+  // 6. Store the session into the storage
+  clearInterval(interval);
+  sessionStorage.setItem('session', { access_token: accessToken, id_token: idToken })
+});
 ```
 
-##### Check the session
+1. Build the authorization url. Add the client identifier, nonce, state and callback url into the queries
+
+2. Open the authorization webpage into a new tab.
+
+3. Get the access, identity tokens, state and the session state from the callback url.
+
+4. Check if the state fetched from the callback url matches the one passed into the request
+
+5. Check if the nonce fetched from the identity token matches the one passed into the request
+
+6. Store the session into the storage.
 
 Once the tokens are received, add an hidden iframe into your application with the target url : 
 
@@ -131,30 +149,34 @@ http://localhost:60000/check_session
 When the iframe is loaded then periodically check the session :
 
 ```javascript
-        var self = this;
-        self.handleMessage = function(e) { // This operation is called when a response has been received from the iframe.
-          var self = this;
-          if (e.data === 'error' || e.data === 'changed') {
-            	sessionStorage.removeItem('key'); // Remove the session.
-          }
-      	};
+var self = this;
+// This operation is called when a message has been received from the iframe.
+self.handleMessage = function(e) { 
+    var self = this;
+  if (e.data === 'error' || e.data === 'changed') {
+      sessionStorage.removeItem('session'); // Remove the session.
+  }
+};
 
-				window.addEventListener("message", self.handleMessage, false);
-        var originUrl = window.location.protocol + "//" + window.location.host;
-        self._interval = setInterval(function() { 
-            var session = JSON.parse(sessionStorage.getItem('key')); // Get the session from the storage
-            var message = "Website ";
-            if (session) {
-                message += session['session_state'];
-            } else {
-                session += "tmp";
-            }
-            
-            var win = self._sessionFrame.contentWindow; // Post a message to the hidden frame.
-            win.postMessage(message, "http://localhost:60000");
-        }, 3*1000);
+// When the message is received then execute the handleMessage callback.
+window.addEventListener("message", self.handleMessage, false);
+// 1. Periodically check the session.
+var originUrl = window.location.protocol + "//" + window.location.host;
+self._interval = setInterval(function() { 
+  // 2. Get the session from the storage
+    var session = JSON.parse(sessionStorage.getItem('key'));
+  // 3. Get the session state.
+  var message = "Website "+ session['session_state'];
+  // 4. Post a message to the hidden iframe
+  var win = self._sessionFrame.contentWindow;
+  win.postMessage(message, "http://localhost:60000");
+}, 3*1000);
 ```
 
+1. Periodically check the session (every 3 seconds)
 
+2. Get the session from the storage
 
+3. Get the session state
 
+4. Post a the client identifier and the session state to to the check_session endpoint.

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The objective of this tutorial is to offer the possibility to your end-users to authenticate with their credentials in your ASP.NET CORE REACT.JS website. The grant-type used is the OAUTH2.0 [password](https://tools.ietf.org/html/rfc6749#section-4.3). 
+The objective of this tutorial is to offer the possibility to the end-users to authenticate with their credentials in an ASP.NET CORE REACT.JS website. The grant-type used is the OAUTH2.0 [password](https://tools.ietf.org/html/rfc6749#section-4.3). 
 
 ![images\openidGrantTypePasswordWorkflow](images\openidGrantTypePasswordWorkflow.png)
 
@@ -16,7 +16,7 @@ The objective of this tutorial is to offer the possibility to your end-users to 
 
 ## Prerequisistes
 
-* The **idserver** database must be deployed
+* The ```idserver``` database must be deployed
 
 * The OPENID provider must be configured
 
@@ -24,7 +24,7 @@ The objective of this tutorial is to offer the possibility to your end-users to 
 
 ### Add the OPENID server
 
-Please refer to this tutorial to create a new OPENID server
+Please refer to this **tutorial** to create a new OPENID server
 
 ### Configure OPENID
 
@@ -74,27 +74,38 @@ Add a new **Authenticate** method into the HomeController which accepts an Authe
 
 ```csharp
 [HttpPost]
-        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest authenticateRequest)
-        {
-            var grantedToken = await _identityServerClientFactory.CreateAuthSelector().UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
-                .UsePassword(authenticateRequest.Login, authenticateRequest.Password, "openid", "profile", "role")
-                .ResolveAsync(Constants.OpenIdWellKnownConfiguration)
-                .ConfigureAwait(false); // Use the password grant-type to get the access token.
-            if (grantedToken == null || string.IsNullOrWhiteSpace(grantedToken.AccessToken))
-            {
-                return new UnauthorizedResult();
-            }
-
-            return new OkObjectResult(grantedToken);
-        }
-        }
+public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest authRequest) { }
 ```
 
-#### REACT.JS
+And add this code into the **Authenticate** body :
+
+```csharp
+// 1. Get an access token
+var grantedToken = await _identityServerClientFactory.
+  CreateAuthSelector().
+  UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)                             .UsePassword(authenticateRequest.Login,                                                                      authenticateRequest.Password,                                                                    "openid", "profile", "role")
+  .ResolveAsync(Constants.OpenIdWellKnownConfiguration)
+  .ConfigureAwait(false);
+// 2. Check the access token.
+if (grantedToken == null || string.IsNullOrWhiteSpace(grantedToken.AccessToken))
+{
+   return new UnauthorizedResult();
+}
+
+// 3. Return the granted token
+return new OkObjectResult(grantedToken);
+```
+
+1. The [client_secret_post](http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication) authentication method and ```password``` grant-type is used to get an access token valids on the scope  ```openid```,```profile```, ```role```. 
+
+2. Check the access token and returns 401 error code if not valid.
+
+3. Returns the granted token 
+
 
 ##### Authenticate the end-user
 
-Create a new login page into your REACT.JS application and add a form with two fields  (login and password) and a submit button. When the form is submitted by the end-user then an HTTP POST request  is executed against the target url **/Home/Authenticate** and the login & password is passed into the HTTP Body.
+Create a new login page into your REACT.JS application and add a form with two fields  (login and password) and a submit button. When the form is submitted by the end-user then an HTTP POST request  is executed against the target url ```/Home/Authenticate``` and the login & password is passed into the HTTP Body.
 
 **HTTP HEADER**
 
@@ -105,49 +116,59 @@ Create a new login page into your REACT.JS application and add a form with two f
 
 **HTTP BODY**
 
-| Key       | Value                             |
-| --------- | --------------------------------- |
-| HTTP BODY | { login: "<login>", "<password>"} |
+| Key       | Value                                     |
+| --------- | ----------------------------------------- |
+| HTTP BODY | { login: "```login```", "```password```"} |
 
 ##### Check the session
 
 Once the response is received, use the web storage API to store the result. Use the code below to check the session validity :
 
 ```javascript
+// 1. Import the moment library
 import moment from 'moment';
-
-                    ...code...
-
-                    var self = this;
-                    this._interval = setInterval(function () {
-                user = UserStore.getUser(); // Get token stored in the (session / local) storage
-                if (!user['access_token']) {
-                    clearInterval(self._interval);
-                    return;
-                }
-
-                var accessToken = user['access_token'];
-                var accessTokenPayload = JSON.parse(window.atob(accessToken.split('.')[1])); // retrieve the user information.
-                var expirationTime = moment.unix(accessTokenPayload['exp']); // Get the expiration time.
-                var now = moment();
-                if (expirationTime < now) { // Check the validity of the access token.
-                    clearInterval(self._interval);
-                }
-            }, 3*1000);
+var self = this;
+// 2. Periodically check the access token validity
+self._interval = setInterval(function () {
+  // 3. Get the session.
+  var session  = JSON.parse(sessionStorage.getItem('session'));
+  // 4. Get the access token.
+  var accessToken = user['access_token'];
+  // 5. Get the expiration time
+  var accessTokenPayload = JSON.parse(window.atob(accessToken.split('.')[1]));
+  var expirationTime = moment.unix(accessTokenPayload['exp']);
+  var now = moment();
+  // 6. Check the validity
+	if (expirationTime < now) {.
+  	clearInterval(self._interval);
+    sessionStorage.removeItem('session');
+  }
+}, 3*1000);
 ```
 
-## Result
+1. Import the [moment.js](https://momentjs.com/) library
+
+2. Check every 3 seconds the session validity
+
+3. Get the session from the session storage
+
+4. Get the access token
+
+5. Get the expiration time
+
+6. Compare the expiration time with the current time. If the expiration time is less than the current time then  clear the interval and remove the session from the storage.
+
 
 To run the sample application please follow the steps below :
 
 1. Fetch the [samples projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
 
-2. Open the folder /SimpleIdentityServer.Samples/Migrations/<database> corresponding to the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is **idserver**, if you're using a different one then open the **appsetting.json** and update the connectionString.
+2. Open the folder /SimpleIdentityServer.Samples/Migrations/```database``` matching the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is ```idserver```, if you're using a different one then open the ```appsetting.json``` and update the connectionString.
 
-3. Launch the command  **dotnet run -f net461 / netcoreapp2.0**. At the end of the execution the database will be migrated and the tables will be populated.
+3. Launch the command  ```dotnet run -f net461 / netcoreapp2.0```. At the end of the execution the database will be migrated and the tables will be populated.
 
-4. Before starting the OPENID server ensure that the environment variable **SID_MODULE** exists and its value is set to a directory.
+4. Before starting the OPENID server ensure that the environment variable ```SID_MODULE``` exists and its value is set to a directory.
 
-5. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**. 
+5. Open the folder ```/SimpleIdentityServer.Samples/WebsiteAuthentication``` and execute the command ```launch.cmd```. 
 
 ![images\openidGrantTypePasswordResult](images\openidGrantTypePasswordResult.png)
