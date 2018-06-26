@@ -4,7 +4,7 @@
 
 The objective of this tutorial is to offer the possibility to the end-users to authenticate against an ASP.NET CORE website with their local or external accounts. The difference with the previous tutorial is the lifecycle of the session is not managed by the website but by the OPENID provider via the [session management mechanism](http://openid.net/specs/openid-connect-session-1_0.html). 
 
-![images\openidGrantTypeImplicitWithSessionWorkflow](images\openidGrantTypeImplicitWithSessionWorkflow.png)
+![images/openidGrantTypeImplicitWithSessionWorkflow](images/openidGrantTypeImplicitWithSessionWorkflow.png)
 
 1. The REACT.JS application redirects the user-agent to the authorization endpoint
 
@@ -180,3 +180,21 @@ self._interval = setInterval(function() {
 3. Get the session state
 
 4. Post a the client identifier and the session state to to the check_session endpoint.
+
+## Result
+
+run the sample application please follow the steps below :
+
+1. Fetch the [sample projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
+
+2. Open the folder /SimpleIdentityServer.Samples/Migrations/```database```corresponding to the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is **idserver**, if you're using a different one then open the ```appsetting.json``` and update the connectionString.
+
+3. Launch the command ```dotnet run -f net461 / netcoreapp2.0```. At the end of the execution the database will be migrated and the tables will be populated.
+
+4. Before starting the OPENID server ensure that the environment variable ```SID_MODULE``` exists and its value is set to a directory.
+
+5. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**.
+
+In a browser open the url ```http://localhost:64950``` and click on the button **EXTERNAL AUTHENTICATION WITH SESSION**
+
+![images/openidImplicitWithSessionResult](images/openidImplicitWithSessionResult.png)

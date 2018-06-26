@@ -1,2 +1,3 @@
 START cmd /k "cd WebsiteAuthentication/OpenIdProvider && dotnet run -f net461"
+START cmd /k "cd WebsiteAuthentication/ReactJs && dotnet run -f net461"
 echo Applications are running ...

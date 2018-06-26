@@ -4,7 +4,7 @@
 
 The objective of this tutorial is to offer the possibility to the end-users to authenticate against an ASP.NET CORE website with their local or external accounts. The grant-type used it the OAUTH2.0 [implicit](https://tools.ietf.org/html/rfc6749#section-4.2).
 
-![images\openidGrantTypeImplicitWithoutSessionWorkflow](images\openidGrantTypeImplicitWithoutSessionWorkflow.png)
+![images/openidGrantTypeImplicitWithoutSessionWorkflow](images/openidGrantTypeImplicitWithoutSessionWorkflow.png)
 
 The REACT.JS application redirects the user-agent to the authorization endpoint.
 
@@ -110,20 +110,20 @@ var interval = setInterval(function () {
   var idToken = getParameterByName('id_token', href);
   var state = getParameterByName('state', href);
   if (!idToken && !accessToken) {
-  	return;
+      return;
   }
 
   // 5. Check the state
   if (state !== stateValue) {
-  	return;
+      return;
   }
 
   var payload = JSON.parse(window.atob(idToken.split('.')[1]));
   // 6. Check the nonce.
   if (payload.nonce !== nonceValue) {
-  	return;
+      return;
   }
-  
+
   // 7. The end-user is authenticated
   sessionStorage.setItem('session', { access_token: accessToken, id_token: idToken });
   clearInterval(interval);
@@ -151,7 +151,7 @@ var interval = setInterval(function () {
 import moment from 'moment';
 var self = this;
 self._interval = setInterval(function () {
-	// 2. Get the session from the session storage.
+    // 2. Get the session from the session storage.
   var session = JSON.parse(sessionStorage.getItem('session'));
   // 3. Get the access token and the expiration time.
   var accessToken = user['access_token'];
@@ -160,7 +160,7 @@ self._interval = setInterval(function () {
   var now = moment();
   // 4. Check the session.
   if (expirationTime < now) {
-  	clearInterval(self._interval);
+      clearInterval(self._interval);
     sessionStorage.removeItem('session');
   }
 }, 3*1000);
@@ -174,6 +174,7 @@ self._interval = setInterval(function () {
 
 4. If the expiration time is less than the validity time then remove the session from the storage.
 
+## Result
 
 To run the sample application please follow the steps below :
 
@@ -189,10 +190,4 @@ To run the sample application please follow the steps below :
 
 In a browser open the url ```http://localhost:64950``` and click on the button **EXTERNAL AUTHENTICATION WITHOUT SESSION**
 
-![images\openidImplicitWithoutSessionResult](images\openidImplicitWithoutSessionResult.png)
-
-
-
-
-
-
+![images/openidImplicitWithoutSessionResult](images/openidImplicitWithoutSessionResult.png)

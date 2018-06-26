@@ -4,7 +4,7 @@
 
 The objective of this tutorial is to offer the possibility to the end-users to authenticate with their credentials in an ASP.NET CORE REACT.JS website. The grant-type used is the OAUTH2.0 [password](https://tools.ietf.org/html/rfc6749#section-4.3). 
 
-![images\openidGrantTypePasswordWorkflow](images\openidGrantTypePasswordWorkflow.png)
+![images/openidGrantTypePasswordWorkflow](images/openidGrantTypePasswordWorkflow.png)
 
 1. The REACT.JS tries to get an access token by passing the login and password of the end-user.
 
@@ -102,7 +102,6 @@ return new OkObjectResult(grantedToken);
 
 3. Returns the granted token 
 
-
 ##### Authenticate the end-user
 
 Create a new login page into your REACT.JS application and add a form with two fields  (login and password) and a submit button. When the form is submitted by the end-user then an HTTP POST request  is executed against the target url ```/Home/Authenticate``` and the login & password is passed into the HTTP Body.
@@ -139,8 +138,8 @@ self._interval = setInterval(function () {
   var expirationTime = moment.unix(accessTokenPayload['exp']);
   var now = moment();
   // 6. Check the validity
-	if (expirationTime < now) {.
-  	clearInterval(self._interval);
+    if (expirationTime < now) {.
+      clearInterval(self._interval);
     sessionStorage.removeItem('session');
   }
 }, 3*1000);
@@ -158,6 +157,7 @@ self._interval = setInterval(function () {
 
 6. Compare the expiration time with the current time. If the expiration time is less than the current time then  clear the interval and remove the session from the storage.
 
+## Result
 
 To run the sample application please follow the steps below :
 
@@ -171,4 +171,4 @@ To run the sample application please follow the steps below :
 
 5. Open the folder ```/SimpleIdentityServer.Samples/WebsiteAuthentication``` and execute the command ```launch.cmd```. 
 
-![images\openidGrantTypePasswordResult](images\openidGrantTypePasswordResult.png)
+![images/openidGrantTypePasswordResult](images/openidGrantTypePasswordResult.png)
