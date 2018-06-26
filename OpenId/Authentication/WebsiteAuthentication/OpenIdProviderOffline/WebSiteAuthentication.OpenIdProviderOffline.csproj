@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AssemblyName>WebSiteAuthentication.OpenIdProviderOffline</AssemblyName>
+    <PackageId>WebSiteAuthentication.OpenIdProviderOffline</PackageId>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" /> 
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0" />
+	<PackageReference Include="SimpleBus.InMemory" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.AccessToken.Store.InMemory" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.Authenticate.Basic" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.EF.InMemory" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.EventStore.InMemory" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.EventStore.Handler" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.Host" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.Shell" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.Store.InMemory" Version="3.0.0-rc7" />
+	<PackageReference Include="SimpleIdentityServer.UserManagement" Version="3.0.0-rc7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Migrations\OpenIdMigration\Common\OpenIdMigration.Common.csproj" />
+  </ItemGroup>
+</Project>
