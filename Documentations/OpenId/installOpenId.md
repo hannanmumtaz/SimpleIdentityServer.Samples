@@ -1,21 +1,21 @@
 # Getting started with the OPENID server
 
-The SID OPENID server can run in two different modes:
+The OpenId server can run in two different modes :
 
-1. **Offline**: The developer manually install the nuget packages and configure them.
+1. **Offline**: The units are manually installed and configured by the developer.
 
-2. **Online**: The SimpleIdentityServer units are automatically retrieved the first time the application is launched.
+2. **Online**: The units are automatically retrieved from the Nuget feeds and dynamically loaded during the runtime.
 
-
+The OpenId server is made of several components :
 
 **Components**:
 
-| Component       | Description                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| OAuthStorage    | Store the access token, authorization code or confirmation code into the inmemory or redis storage  |
-| OAuthRepository | Store the clients, resource owners etc ... into a database (SQLSERVER, POSTGRE, INMEMORY or SQLITE) |
-| EventsHandler   | Handle the events raised by the OPENID server                                                       |
-| UI              | Different UI components of the OPENID server : authentication, user management and the shell        |
+| Component       | Description                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------ |
+| OAuthStorage    | Store the access token, authorization code or confirmation code into an InMemory or Redis storage.     |
+| OAuthRepository | Store the clients, resource owners or claims into a database (SQLSERVER, POSTGRE, INMEMORY or SQLITE)  |
+| Bus             | When an event is raised then a message is pushed into the queue. Those events can be handled later ... |
+| UI              | UI components : authentication, user management and the shell                                          |
 
 ## Offline usage
 
