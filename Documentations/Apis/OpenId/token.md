@@ -8,9 +8,9 @@ This endpoint is used to get an access / identity token
 
 ``POST http://idserver.com/token``
 
-## Password grant-type
+### Password grant-type
 
-### Query parameters
+#### Query parameters
 
 | Parameter  | Description                                      |
 | ---------- | ------------------------------------------------ |
@@ -21,9 +21,9 @@ This endpoint is used to get an access / identity token
 
 *TODO : authenticate clients*
 
-## Client credentials grant-type
+### Client credentials grant-type
 
-### Query parameters
+#### Query parameters
 
 | Parameter  | Description                            |
 | ---------- | -------------------------------------- |
@@ -32,13 +32,9 @@ This endpoint is used to get an access / identity token
 
 *TODO : Authenticate clients*
 
+### Refresh token grant-type
 
-
-## Refresh token grant-type
-
-
-
-### Query parameters
+#### Query parameters
 
 | Parameter     | Description   |
 | ------------- | ------------- |
@@ -48,9 +44,9 @@ This endpoint is used to get an access / identity token
 
 *TODO : Authenticate clients*
 
-## Authorization code grant-type
+### Authorization code grant-type
 
-### Query parameters
+#### Query parameters
 
 | Parameter    | Description        |
 | ------------ | ------------------ |
@@ -60,7 +56,7 @@ This endpoint is used to get an access / identity token
 
 *TODO : Authenticate clients*
 
-## UMA ticket grant-type
+### UMA ticket grant-type
 
 | Parameter  | Description |
 | ---------- | ----------- |
@@ -69,7 +65,21 @@ This endpoint is used to get an access / identity token
 
 *TODO : Authenticate clients*
 
-# Errors
+# Revoke token
+
+This endpoint is used to revoke a token
+
+## HTTP Request
+
+`POST http://idserver.com/token/revoke`
+
+## Query parameters
+
+| Parameter       | Description             |
+| --------------- | ----------------------- |
+| token           | access or refresh token |
+| token_type_hint | refresh or access       |
+
 
 The token API uses the following error codes 
 
@@ -88,6 +98,7 @@ Following error messages can be returned
 | the parameter scope is missing                               |         |
 | the parameter refresh_token is missing                       |         |
 | the parameter code is missing                                |         |
+| the parameter token is missing                               |         |
 | the client doesn't exist                                     |         |
 | the client cannot be authenticated with secret basic         |         |
 | the client cannot be authenticated with secret post          |         |
@@ -108,3 +119,6 @@ Following error messages can be returned
 | the refresh token can be used only by the same issuer        |         |
 | Based on the RFC-3986 the redirection-uri is not well formed |         |
 | the authorization code is not correct                        |         |
+| no parameter in body request                                 |         |
+| the token has not been issued for the given client id '{0}'  |         |
+| the token doesn't exist                                      |         |
