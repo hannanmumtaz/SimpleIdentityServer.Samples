@@ -1,7 +1,8 @@
 # Manager Resource Owners API
 
 This endpoint is used to manage the resource owners.
-An access token valids for the scope `manager` or with an `administrator role` must be passed to the request.
+
+An access token valids for the scope `manager` or with a claim `role` equals to `administrator` must be passed to the request.
 
 ## Search resource owners
 
@@ -22,5 +23,11 @@ The `order` parameter contains the following properties
 
 | Property    | Description                                      |
 | ----------- | ------------------------------------------------ |
-| target	  | 				                                 |
-| order		  | 					                             |
+| target	  | update_datetime	etc...                           |
+| order		  | 1 = desc, 0 = asc	                             |
+
+#### Errors
+
+| Error code | Meaning               |
+| ---------- | --------------------- |
+| 401        | Not authorized		 |
