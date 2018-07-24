@@ -12,12 +12,6 @@ The objective of this tutorial is to offer the possibility to the end-users to a
 
 3. The REACT.JS application fetches the access token and the session_state from the redirection url. It periodically checks that the session is still active.
 
-## Prerequisistes
-
-* The **idserver** must be deployed
-
-* The OPENID provider must be configured
-
 ## Implementation
 
 ### Add the OPENID provider
@@ -45,7 +39,7 @@ Register a new client into the OPENID provider and set the following properties
 
 Create a new login page into your REACT.JS application and add a new button **external authentication**. When this button is clicked by the end-user then a new tab is opened and the authorization web page is displayed.
 
-Before going further, the authorization url must be built by the REACT.JS application. Execute an HTTP GET request to get the well-known configuration. The base authorization url can be fetched from the **authorization_endpoint** key.
+Before going further, the authorization url must be built by the REACT.JS application. Execute an `HTTP GET` request to get the well-known configuration. The base authorization url can be fetched from the **authorization_endpoint** key.
 
 ```textile
 Request URL : http://localhost:60000/.well-known/openid-configuration
@@ -187,14 +181,15 @@ run the sample application please follow the steps below :
 
 1. Fetch the [sample projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
 
-2. Open the folder /SimpleIdentityServer.Samples/Migrations/```database```corresponding to the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is **idserver**, if you're using a different one then open the ```appsetting.json``` and update the connectionString.
-
-3. Launch the command ```dotnet run -f net461 / netcoreapp2.0```. At the end of the execution the database will be migrated and the tables will be populated.
-
-4. Before starting the OPENID server ensure that the environment variable ```SID_MODULE``` exists and its value is set to a directory.
-
-5. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**.
+2. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**.
 
 In a browser open the url ```http://localhost:64950``` and click on the button **EXTERNAL AUTHENTICATION WITH SESSION**
 
 ![images/openidImplicitWithSessionResult](images/openidImplicitWithSessionResult.png)
+
+### Credentials
+
+| Property | Value         |
+| -------- | ------------- |
+| login    | administrator |
+| password | password      |

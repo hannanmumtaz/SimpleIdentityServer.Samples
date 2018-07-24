@@ -14,17 +14,11 @@ The REACT.JS application redirects the user-agent to the authorization endpoint.
 
 3. The session lifetime is managed by the REACT.JS application. If the access token is expired then the session is removed from the (local / session) storage.
 
-## Prerequisites
-
-* The **idserver** database must be deployed
-
-* The OPENID provider must be configured
-
 ## Implementation
 
 ### Add the OPENID server
 
-Please refer to this tutorial to create a new OPENID server.
+Please refer to this **tutorial** to create a new OPENID server.
 
 ### Configure OPENID
 
@@ -180,14 +174,15 @@ To run the sample application please follow the steps below :
 
 1. Fetch the  [sample projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
 
-2. Open the folder /SimpleIdentityServer.Samples/Migrations/```database```corresponding to the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is **idserver**, if you're using a different one then open the ```appsetting.json``` and update the connectionString.
-
-3. Launch the command ```dotnet run -f net461 / netcoreapp2.0```. At the end of the execution the database will be migrated and the tables will be populated.
-
-4. Before starting the OPENID server ensure that the environment variable ```SID_MODULE``` exists and its value is set to a directory.
-
-5. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**.
+2. Open the folder /SimpleIdentityServer.Samples/WebsiteAuthentication and execute the command **launch.cmd**.
 
 In a browser open the url ```http://localhost:64950``` and click on the button **EXTERNAL AUTHENTICATION WITHOUT SESSION**
 
 ![images/openidImplicitWithoutSessionResult](images/openidImplicitWithoutSessionResult.png)
+
+### Credentials
+
+| Property | Value         |
+| -------- | ------------- |
+| login    | administrator |
+| password | password      |

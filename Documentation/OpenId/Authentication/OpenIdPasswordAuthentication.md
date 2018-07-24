@@ -14,12 +14,6 @@ The objective of this tutorial is to offer the possibility to the end-users to a
 
 **Note : all the javascript examples have been developed with the REACT.JS framework.**
 
-## Prerequisistes
-
-* The ```idserver``` database must be deployed
-
-* The OPENID provider must be configured
-
 ## Implementation
 
 ### Add the OPENID server
@@ -32,8 +26,8 @@ Register a new client into the OPENID provider and set the following properties 
 
 | Property              | Value              |
 | --------------------- | ------------------ |
-| Grant-Type            | Password           |
-| Authentication method | Client secret post |
+| Grant-Type            | password           |
+| Authentication method | client secret post |
 | Application type      | web                |
 
 ### Create website
@@ -43,10 +37,10 @@ Register a new client into the OPENID provider and set the following properties 
 Create a new ASP.NET core application **WebsiteAuthentication.ReactJs** and install the following nuget package
 
 ```
-SimpleIdentityServer.Client 3.0.0-rc7
+SimpleIdentityServer.Client 3.0.0.3
 ```
 
-Register the SimpleIdentityServer.Client dependencies by adding the following code into the ConfigureService method in the Startup.cs file.
+Register the `SimpleIdentityServer.Client` dependencies by adding the following code into the ConfigureService method in the Startup.cs file.
 
 ```csharp
 services.AddIdServerClient();
@@ -87,13 +81,13 @@ var grantedToken = await _identityServerClientFactory.
   .ResolveAsync(Constants.OpenIdWellKnownConfiguration)
   .ConfigureAwait(false);
 // 2. Check the access token.
-if (grantedToken == null || string.IsNullOrWhiteSpace(grantedToken.AccessToken))
+if (!grantedToken.ContainsError)
 {
    return new UnauthorizedResult();
 }
 
 // 3. Return the granted token
-return new OkObjectResult(grantedToken);
+return new OkObjectResult(grantedToken.Content);
 ```
 
 1. The [client_secret_post](http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication) authentication method and ```password``` grant-type is used to get an access token valids on the scope  ```openid```,```profile```, ```role```. 
@@ -163,12 +157,13 @@ To run the sample application please follow the steps below :
 
 1. Fetch the [samples projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
 
-2. Open the folder /SimpleIdentityServer.Samples/Migrations/```database``` matching the database engine (SQLSERVER, SQLITE, POSTGRE) you're using. By default the database used is ```idserver```, if you're using a different one then open the ```appsetting.json``` and update the connectionString.
-
-3. Launch the command  ```dotnet run -f net461 / netcoreapp2.0```. At the end of the execution the database will be migrated and the tables will be populated.
-
-4. Before starting the OPENID server ensure that the environment variable ```SID_MODULE``` exists and its value is set to a directory.
-
-5. Open the folder ```/SimpleIdentityServer.Samples/WebsiteAuthentication``` and execute the command ```launch.cmd```. 
+2. Open the folder ```/SimpleIdentityServer.Samples/WebsiteAuthentication``` and execute the command ```launch.cmd```. 
 
 ![images/openidGrantTypePasswordResult](images/openidGrantTypePasswordResult.png)
+
+### Credentials
+
+| Property | Value         |
+| -------- | ------------- |
+| login    | administrator |
+| password | password      |

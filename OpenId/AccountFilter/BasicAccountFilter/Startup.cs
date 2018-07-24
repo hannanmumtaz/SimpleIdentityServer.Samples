@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OpenIdMigration.Common;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.AccountFilter.Basic;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.EF;
@@ -14,8 +15,9 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.UserManagement;
+using System.Collections.Generic;
 
-namespace WebSiteAuthentication.OpenIdProvider
+namespace BasicAccountFilter
 {
     public class Startup
     {
@@ -51,7 +53,18 @@ namespace WebSiteAuthentication.OpenIdProvider
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
             ConfigureBus(services);
+            ConfigureAccountFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
+            services.AddAuthentication(Constants.ExternalCookieName)
+                .AddCookie(Constants.ExternalCookieName)
+                .AddFacebook(opts =>
+                {
+                    opts.ClientId = "569242033233529";
+                    opts.ClientSecret = "12e0f33817634c0a650c0121d05e53eb";
+                    opts.SignInScheme = Constants.ExternalCookieName;
+                    opts.Scope.Add("public_profile");
+                    opts.Scope.Add("email");
+                });
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
@@ -93,6 +106,29 @@ namespace WebSiteAuthentication.OpenIdProvider
         private void ConfigureLogging(IServiceCollection services)
         {
             services.AddLogging();
+        }
+        
+        private void ConfigureAccountFilters(IServiceCollection services)
+        {
+            services.AddAccountFilter(new AccountFilterBasicOptions
+            {
+                Rules = new List<FilterRule>
+                {
+                    new FilterRule
+                    {
+                        Name = "invalid_rule",
+                        Comparisons = new List<FilterComparison>
+                        {
+                            new FilterComparison
+                            {
+                                ClaimKey = "organization",
+                                ClaimValue = "entreprise",
+                                Operation = ComparisonOperations.Equal
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         public void Configure(IApplicationBuilder app,

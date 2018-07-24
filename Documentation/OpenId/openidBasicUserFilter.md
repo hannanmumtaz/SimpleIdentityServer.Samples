@@ -61,3 +61,13 @@ services.AddAccountFilter(new AccountFilterBasicOptions
 | ClaimKey   | Claim key                                    |
 | ClaimValue | Regular expression or value                  |
 | Operation  | *Equal* or *NotEqual* or *RegularExpression* |
+
+## Sample project
+
+To run the sample application please follow the steps below :
+
+1. Fetch the [sample projects](https://github.com/thabart/SimpleIdentityServer.Samples.git).
+
+2. Open the folder /SimpleIdentityServer.Samples/AccountFilter and execute the command **launch.cmd**.
+
+In a browser open the url `http://localhost:64950` and try to connect with your facebook account, an error should be displayed because the filter rejects your authentication.
