@@ -1,70 +1,93 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SimpleIdentityServer.Module.Loader;
-using System;
-using System.Collections.Generic;
+using OpenIdMigration.Common;
+using SimpleBus.InMemory;
+using SimpleIdentityServer.AccessToken.Store.InMemory;
+using SimpleIdentityServer.Authenticate.Basic;
+using SimpleIdentityServer.Authenticate.LoginPassword;
+using SimpleIdentityServer.EF;
+using SimpleIdentityServer.EF.InMemory;
+using SimpleIdentityServer.Host;
+using SimpleIdentityServer.Shell;
+using SimpleIdentityServer.Store.InMemory;
+using SimpleIdentityServer.UserManagement;
 
 namespace WebSiteAuthentication.OpenIdProvider
 {
     public class Startup
     {
-        private IModuleLoader _moduleLoader;
+        private IdentityServerOptions _options;
         private IHostingEnvironment _env;
-        private IServiceCollection _services;
-        private IApplicationBuilder _app;
+        public IConfigurationRoot Configuration { get; set; }
 
         public Startup(IHostingEnvironment env)
         {
             _env = env;
-            var moduleLoaderFactory = new ModuleLoaderFactory();
-            _moduleLoader = moduleLoaderFactory.BuidlerModuleLoader(new ModuleLoaderOptions
+            _options = new IdentityServerOptions
             {
-                NugetSources = new List<string>
+                Authenticate = new AuthenticateOptions
                 {
-                    "https://api.nuget.org/v3/index.json",
-                    "https://www.myget.org/F/advance-ict/api/v3/index.json"
+                    CookieName = Constants.CookieName
                 },
-                ModuleFeedUri = new Uri("http://localhost:60008/configuration"),
-                ProjectName = "OpenIdProvider",
-                NugetNbRetry = 5,
-                NugetRetryAfterMs = 1000
-            });
-            _moduleLoader.ModuleInstalled += ModuleInstalled;
-            _moduleLoader.UnitsRestored += UnitsRestored;
-            _moduleLoader.ModulesLoaded += HandleModulesLoaded;
-            _moduleLoader.ConnectorsLoaded += HandleConnectorsLoaded;
-            _moduleLoader.TwoFactorsLoaded += HandleTwoFactorsLoaded;
-            _moduleLoader.ModuleCannotBeInstalled += ModuleCannotBeInstalled;
-            _moduleLoader.ConnectorsChanged += HandleConnectorsChanged;
-
-            _moduleLoader.Initialize();
-            _moduleLoader.RestoreUnits().Wait();
-            _moduleLoader.LoadUnits();
-            _moduleLoader.WatchConfigurationFileChanges();
+                Scim = new ScimOptions
+                {
+                    IsEnabled = false
+                }
+            };
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            _services = services;
+            // 2. Add the dependencies needed to enable CORS
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()));
+
+            // 3. Configure Simple identity server
+            ConfigureOauthRepositoryInMemory(services);
+            ConfigureStorageInMemory(services);
             ConfigureLogging(services);
-            services.AddLogging();
-            var mvcBuilder = services.AddMvc();
-            var authBuilder = services.AddAuthentication(Constants.CookieName)
+            ConfigureBus(services);
+            services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
+            services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
                     opts.LoginPath = "/Authenticate";
                 });
-            _moduleLoader.ConfigureModuleAuthentication(authBuilder);
             services.AddAuthorization(opts =>
             {
-                _moduleLoader.ConfigureModuleAuthorization(opts);
+                opts.AddOpenIdSecurityPolicy(Constants.CookieName);
             });
-            _moduleLoader.ConfigureModuleServices(services, mvcBuilder, _env);
+            // 5. Configure MVC
+            var mvcBuilder = services.AddMvc();
+            services.AddOpenIdApi(_options); // API
+            services.AddBasicShell(mvcBuilder, _env);  // SHELL
+            services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
+            {
+                IsScimResourceAutomaticallyCreated = false
+            });  // BASIC AUTHENTICATION
+            services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions());  // USER MANAGEMENT
+        }
+
+        private void ConfigureBus(IServiceCollection services)
+        {
+            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
+            {
+                ServerName = "openid"
+            });
+        }
+
+        private void ConfigureOauthRepositoryInMemory(IServiceCollection services)
+        {
+            services.AddOAuthInMemoryEF();
+        }
+
+        private void ConfigureStorageInMemory(IServiceCollection services)
+        {
+            services.AddInMemoryStorage();
         }
 
         private void ConfigureLogging(IServiceCollection services)
@@ -76,65 +99,32 @@ namespace WebSiteAuthentication.OpenIdProvider
             IHostingEnvironment env,
             ILoggerFactory loggerFactory)
         {
-            _app = app;
-	    loggerFactory.AddConsole();
-            UseSerilogLogging(loggerFactory);
+            loggerFactory.AddConsole();
             app.UseAuthentication();
             //1 . Enable CORS.
             app.UseCors("AllowAll");
             // 2. Use static files.
-            app.UseStaticFiles();
+            app.UseShellStaticFiles();
             // 3. Redirect error to custom pages.
             app.UseStatusCodePagesWithRedirects("~/Error/{0}");
-            // 4. Configure the modules.
-            _moduleLoader.Configure(app);
+            // 4. Enable SimpleIdentityServer
+            app.UseOpenIdApi(_options, loggerFactory);
             // 5. Configure ASP.NET MVC
             app.UseMvc(routes =>
             {
-                _moduleLoader.Configure(routes);
+                routes.UseLoginPasswordAuthentication();
+                routes.UseUserManagement();
+                routes.UseShell();
+                routes.MapRoute("AuthArea",
+                    "{area:exists}/Authenticate/{action}/{id?}",
+                    new { controller = "Authenticate", action = "Index" });
             });
-        }
-
-        private void UseSerilogLogging(ILoggerFactory logger)
-        {
-            logger.AddConsole();
-        }
-
-        private void HandleConnectorsChanged(object sender, EventArgs e)
-        {
-	
-        }
-
-        private void HandleConnectorsLoaded(object sender, EventArgs e)
-        {
-            Console.WriteLine("The connectors are loaded");
-        }
-
-        private void HandleTwoFactorsLoaded(object sender, EventArgs e)
-        {
-            Console.WriteLine("The two factors are loaded");
-        }
-
-        private static void ModuleCannotBeInstalled(object sender, StrEventArgs e)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"The nuget package {e.Value} cannot be installed");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        private static void ModuleInstalled(object sender, StrEventArgs e)
-        {
-            Console.WriteLine($"The nuget package {e.Value} is installed");
-        }
-
-        private static void UnitsRestored(object sender, IntEventArgs e)
-        {
-            Console.WriteLine($"Finish to restore the units in {e.Value}");
-        }
-
-        private static void HandleModulesLoaded(object sender, EventArgs e)
-        {
-            Console.WriteLine("The modules are loaded");
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
+                simpleIdentityServerContext.Database.EnsureCreated();
+                simpleIdentityServerContext.EnsureSeedData();
+            }
         }
     }
 }

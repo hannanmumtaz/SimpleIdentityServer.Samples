@@ -450,7 +450,7 @@ namespace OpenIdMigration.Common
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",
                         ApplicationType = ApplicationTypes.web,
-                        GrantTypes = "0,1,2",
+                        GrantTypes = "0,1,2,4",
                         ResponseTypes = "0,1,2"
                     },
                     new Client
@@ -488,7 +488,7 @@ namespace OpenIdMigration.Common
                         ApplicationType = ApplicationTypes.web,
                         RedirectionUrls = "http://localhost:64950/callback",
                         PostLogoutRedirectUris = "http://localhost:64950/end_session",
-                        GrantTypes = "0,1,2",
+                        GrantTypes = "0,1,2,4",
                         ResponseTypes = "0,1,2"
                     }
                 });

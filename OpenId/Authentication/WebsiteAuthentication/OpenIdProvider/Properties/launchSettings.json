@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:59537/",
+      "applicationUrl": "http://localhost:56131/",
       "sslPort": 0
     }
   },
@@ -15,13 +15,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WebSiteAuthentication.OpenIdProvider": {
+    "WebSiteAuthentication.OpenIdProviderOffline": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:59538/"
+      "applicationUrl": "http://localhost:56132/"
     }
   }
 }

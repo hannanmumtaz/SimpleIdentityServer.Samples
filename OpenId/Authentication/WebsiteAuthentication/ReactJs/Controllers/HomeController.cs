@@ -28,12 +28,12 @@ namespace WebsiteAuthentication.ReactJs.Controllers
                 .UsePassword(authenticateRequest.Login, authenticateRequest.Password, "openid", "profile", "role")
                 .ResolveAsync(Constants.OpenIdWellKnownConfiguration)
                 .ConfigureAwait(false);
-            if (grantedToken == null || string.IsNullOrWhiteSpace(grantedToken.AccessToken))
+            if (grantedToken.ContainsError)
             {
                 return new UnauthorizedResult();
             }
 
-            return new OkObjectResult(grantedToken);
+            return new OkObjectResult(grantedToken.Content);
         }
 
         private static void Check(AuthenticateRequest authenticateRequest)

@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSiteAuthentication.OpenI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsiteAuthentication.ReactJs", "WebsiteAuthentication\ReactJs\WebsiteAuthentication.ReactJs.csproj", "{B4CDC1A3-A38E-4068-ABD5-BD57236D37D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSiteAuthentication.OpenIdProviderOffline", "WebsiteAuthentication\OpenIdProviderOffline\WebSiteAuthentication.OpenIdProviderOffline.csproj", "{8E6C6621-467F-459B-9DBD-A370EF230E31}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdMigration.Common", "..\..\Migrations\OpenIdMigration\Common\OpenIdMigration.Common.csproj", "{1292F205-B3D2-457E-8D31-22B24BEAC93A}"
 EndProject
 Global
@@ -29,10 +27,6 @@ Global
 		{B4CDC1A3-A38E-4068-ABD5-BD57236D37D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4CDC1A3-A38E-4068-ABD5-BD57236D37D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4CDC1A3-A38E-4068-ABD5-BD57236D37D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E6C6621-467F-459B-9DBD-A370EF230E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E6C6621-467F-459B-9DBD-A370EF230E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E6C6621-467F-459B-9DBD-A370EF230E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E6C6621-467F-459B-9DBD-A370EF230E31}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1292F205-B3D2-457E-8D31-22B24BEAC93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1292F205-B3D2-457E-8D31-22B24BEAC93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1292F205-B3D2-457E-8D31-22B24BEAC93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,7 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1A27A953-649A-4167-B4D5-576DC5C3EE9F} = {4E3B578B-081E-4BD9-8367-CFE20CDA31B9}
 		{B4CDC1A3-A38E-4068-ABD5-BD57236D37D7} = {44F01737-7919-4A99-AD58-B833939F6C05}
-		{8E6C6621-467F-459B-9DBD-A370EF230E31} = {4E3B578B-081E-4BD9-8367-CFE20CDA31B9}
 		{1292F205-B3D2-457E-8D31-22B24BEAC93A} = {4E3B578B-081E-4BD9-8367-CFE20CDA31B9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
