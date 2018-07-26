@@ -36,6 +36,51 @@ The JSON object `claim` contains the following properties
 | type          | claim type                      |
 | value         | claim value                     |
 
+## Get policy
+
+Get an authorization policy by its identifier.
+
+### HTTP request
+
+`GET http://umaserver.com/policies/{policy_id}`
+
+## Update policy
+
+Update an existing authorization policy.
+
+### HTTP request
+
+`PUT http://umaserver.com/policies`
+
+### Query parameters
+
+| Parameter        | Description                    |
+| ---------------- | ------------------------------ |
+| id			   | policy identifier              |
+| rules            | list of rules                  |
+
+## Add resource to authorization policy
+
+Add resource to authorization policy.
+
+### HTTP request
+
+`POST http://umaserver.com/policies/{policy_id}/resources`
+
+### Query parameters
+
+| Parameter        | Description                    |
+| ---------------- | ------------------------------ |
+| resources		   | list of resource identifiers   |
+
+## Delete resource from authorization policy
+
+Remove the resource from the authorization policy.
+
+### HTTP request
+
+`DELETE http://umaserver.com/policies/{policy_id}/resources/{resource_id}`
+
 # Errors
 
 The permission API uses the following error codes
@@ -44,7 +89,7 @@ The permission API uses the following error codes
 | ---------- | -------------- |
 | 400        | Bad request    |
 | 401        | Not authorized |
-| 404        | Not found |
+| 404        | Not found      |
 
 Following error messages can be returned
 
@@ -57,3 +102,4 @@ Following error messages can be returned
 | resource set {0} doesn't exist                             |         |
 | one or more scopes don't belong to a resource set          |         |
 | the authorization policy cannot be inserted                |         |
+| policy cannot be found									 |		   |
