@@ -1,9 +1,7 @@
-# OPENID UI customization
+In SimpleIdentityServer, some default Razor views are embedded with the UI components. Besides, the UI can be customized by adding custom views to the Areas folder.
 
-The OPENID UI can easily be customized thanks to the behavior of the Razor view engine. By default it is trying to get the view from the folder `Views\*\*.cshtml`.
-If the file doesn't exist then the engine retrieves the view from the DLL. In SimpleIdServer default views have been embedded in the UI components.
-
-In the current version `3.0.0.3` there are four nuget packages who contains embedded views :
+# SimpleIdentityServer default UI
+Starting from version `3.0.0.3` there are four nuget packages which contain embedded views :
 
 | Nuget package                                   | Description                                                                                             |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -12,12 +10,13 @@ In the current version `3.0.0.3` there are four nuget packages who contains embe
 | SimpleIdentityServer.Shell                      | Contains the UI shell / template and all the views needed by the OPENID server for example : `consents` |
 | SimpleIdentityServer.UserManagement             | Allows a user to manage his account                                                                     |
 
-## Implementation
 
-Follow the steps below to customize the UI
+## UI customization
 
-* Open your OPENID project and create a new folder `Areas`
-* In this folder add the different Areas used by the UI component installed in your project
+In order to customize the UI, we need to execute the following actions:
+
+* Open the SimpleIdentityServer project and create a new folder `Areas`
+* In this folder create a folder for each UI component to be customized:
 
 | Nuget package                                   | Area                 |
 | ----------------------------------------------- | -------------------- |
@@ -26,7 +25,7 @@ Follow the steps below to customize the UI
 | SimpleIdentityServer.Shell                      | Shell\Views          |
 | SimpleIdentityServer.UserManagement             | UserManagement\Views |
 
-* In each areas get the views from git and add them into the corresponding folder
+* Retrieve the corresponding views from SimpleIdentityServer's repository and copy the views to the corresponding folder
 
 | Nuget package                                   | Git                                                                                                                                                                                |
 | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -35,7 +34,7 @@ Follow the steps below to customize the UI
 | SimpleIdentityServer.Shell                      | [source](https://github.com/thabart/SimpleIdentityServer/tree/master/SimpleIdentityServer/src/Apis/SimpleIdServer/SimpleIdentityServer.Shell/Areas/Shell/Views)                    |
 | SimpleIdentityServer.UserManagement             | [source](https://github.com/thabart/SimpleIdentityServer/tree/master/SimpleIdentityServer/src/Apis/SimpleIdServer/SimpleIdentityServer.UserManagement/Areas/UserManagement/Views)  |
 
-## Result
+## Sample project
 
 run the sample application please follow the steps below :
 
