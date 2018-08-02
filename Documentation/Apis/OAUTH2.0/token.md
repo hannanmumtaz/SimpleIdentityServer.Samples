@@ -58,10 +58,10 @@ This endpoint is used to get an access / identity token
 
 ### UMA ticket grant-type
 
-| Parameter  | Description |
-| ---------- | ----------- |
-| grant_type | uma_ticket  |
-|            |             |
+| Parameter  | Description                                    |
+| ---------- | ---------------------------------------------- |
+| grant_type | uma_ticket                                     |
+| ticket     | ticket retrieved from the permission API       |
 
 *TODO : Authenticate clients*
 
