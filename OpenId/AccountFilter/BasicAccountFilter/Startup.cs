@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using BasicAccountFilter.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenIdMigration.Common;
-using SimpleBus.InMemory;
+using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.AccountFilter.Basic;
+using SimpleIdentityServer.AccountFilter.Basic.EF;
+using SimpleIdentityServer.AccountFilter.Basic.EF.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
 using SimpleIdentityServer.EF;
@@ -15,7 +18,6 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.UserManagement;
-using System.Collections.Generic;
 
 namespace BasicAccountFilter
 {
@@ -87,10 +89,7 @@ namespace BasicAccountFilter
 
         private void ConfigureBus(IServiceCollection services)
         {
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
-            {
-                ServerName = "openid"
-            });
+            services.AddTransient<IEventPublisher, EventPublisher>();
         }
 
         private void ConfigureOauthRepositoryInMemory(IServiceCollection services)
@@ -110,25 +109,8 @@ namespace BasicAccountFilter
         
         private void ConfigureAccountFilters(IServiceCollection services)
         {
-            services.AddAccountFilter(new AccountFilterBasicOptions
-            {
-                Rules = new List<FilterRule>
-                {
-                    new FilterRule
-                    {
-                        Name = "invalid_rule",
-                        Comparisons = new List<FilterComparison>
-                        {
-                            new FilterComparison
-                            {
-                                ClaimKey = "organization",
-                                ClaimValue = "entreprise",
-                                Operation = ComparisonOperations.Equal
-                            }
-                        }
-                    }
-                }
-            });
+            services.AddAccountFilter();
+            services.AddBasicAccountFilterInMemoryEF();
         }
 
         public void Configure(IApplicationBuilder app,
@@ -160,6 +142,13 @@ namespace BasicAccountFilter
                 var simpleIdentityServerContext = serviceScope.ServiceProvider.GetService<SimpleIdentityServerContext>();
                 simpleIdentityServerContext.Database.EnsureCreated();
                 simpleIdentityServerContext.EnsureSeedData();
+            }
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var accountFilterContext = serviceScope.ServiceProvider.GetService<AccountFilterBasicServerContext>();
+                accountFilterContext.Database.EnsureCreated();
+                accountFilterContext.EnsureSeedData();
             }
         }
     }

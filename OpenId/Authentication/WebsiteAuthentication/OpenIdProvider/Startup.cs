@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenIdMigration.Common;
+using SimpleBus.Core;
 using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
@@ -14,6 +15,7 @@ using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.UserManagement;
+using WebSiteAuthentication.OpenIdProvider.Services;
 
 namespace WebSiteAuthentication.OpenIdProvider
 {
@@ -74,10 +76,7 @@ namespace WebSiteAuthentication.OpenIdProvider
 
         private void ConfigureBus(IServiceCollection services)
         {
-            services.AddSimpleBusInMemory(new SimpleBus.Core.SimpleBusOptions
-            {
-                ServerName = "openid"
-            });
+            services.AddTransient<IEventPublisher, EventPublisher>();
         }
 
         private void ConfigureOauthRepositoryInMemory(IServiceCollection services)
