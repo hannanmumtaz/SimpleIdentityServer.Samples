@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Website", "01. Website", "{44F01737-7919-4A99-AD58-B833939F6C05}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsiteProtection", "WebsiteProtection\WebsiteProtection.csproj", "{A55CBD4C-DD8B-4725-8A4C-C239A2228135}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A55CBD4C-DD8B-4725-8A4C-C239A2228135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A55CBD4C-DD8B-4725-8A4C-C239A2228135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A55CBD4C-DD8B-4725-8A4C-C239A2228135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A55CBD4C-DD8B-4725-8A4C-C239A2228135}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A55CBD4C-DD8B-4725-8A4C-C239A2228135} = {44F01737-7919-4A99-AD58-B833939F6C05}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1E1BCD1-9A94-4D4B-9109-7276B31D19C5}
+	EndGlobalSection
+EndGlobal
