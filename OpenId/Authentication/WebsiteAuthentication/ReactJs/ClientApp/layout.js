@@ -126,7 +126,7 @@ class Layout extends Component {
         var originUrl = window.location.protocol + "//" + window.location.host;
         self._interval = setInterval(function() { 
             var session = UserStore.getUser();
-            var message = "Website ";
+            var message = "ResourceManagerClientId ";
             if (session) {
                 message += session['session_state'];
             } else {

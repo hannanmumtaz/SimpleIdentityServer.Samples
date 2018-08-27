@@ -455,14 +455,14 @@ namespace OpenIdMigration.Common
                     },
                     new Client
                     {
-                        ClientId = "Website",
+                        ClientId = "ResourceManagerClientId",
                         ClientSecrets = new List<ClientSecret>
                         {
                             new ClientSecret
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 Type = SecretTypes.SharedSecret,
-                                Value = "{E9mmLnrZmrM!]~$"
+                                Value = "ResourceManagerClientId"
                             }
                         },
                         ClientScopes = new List<ClientScope>
@@ -481,7 +481,7 @@ namespace OpenIdMigration.Common
                             }
                         },
                         ClientName = "Website",
-                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_post,
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
                         LogoUri = "",
                         PolicyUri = "http://openid.net",
                         TosUri = "http://openid.net",

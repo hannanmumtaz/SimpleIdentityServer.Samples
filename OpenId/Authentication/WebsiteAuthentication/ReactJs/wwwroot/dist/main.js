@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "3596eb06d283721f5380"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "cccb7c16cf7130fd8223"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -46546,7 +46546,7 @@ var Login = function (_Component) {
     }, {
         key: 'externalAuthentication',
         value: function externalAuthentication(withSession) {
-            var clientId = 'Website';
+            var clientId = 'ResourceManagerClientId';
             var callbackUrl = 'http://localhost:64950/callback';
             var stateValue = '75BCNvRlEGHpQRCT';
             var nonceValue = 'nonce';
@@ -47083,7 +47083,7 @@ var Layout = function (_Component) {
             var originUrl = window.location.protocol + "//" + window.location.host;
             self._interval = setInterval(function () {
                 var session = _stores.UserStore.getUser();
-                var message = "Website ";
+                var message = "ResourceManagerClientId ";
                 if (session) {
                     message += session['session_state'];
                 } else {

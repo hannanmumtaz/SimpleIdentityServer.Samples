@@ -24,7 +24,7 @@ namespace WebsiteAuthentication.ReactJs.Controllers
         public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest authenticateRequest)
         {
             Check(authenticateRequest);
-            var grantedToken = await _identityServerClientFactory.CreateAuthSelector().UseClientSecretPostAuth(Constants.ClientId, Constants.ClientSecret)
+            var grantedToken = await _identityServerClientFactory.CreateAuthSelector().UseClientSecretBasicAuth(Constants.ClientId, Constants.ClientSecret)
                 .UsePassword(authenticateRequest.Login, authenticateRequest.Password, "openid", "profile", "role")
                 .ResolveAsync(Constants.OpenIdWellKnownConfiguration)
                 .ConfigureAwait(false);

@@ -82,7 +82,7 @@ class Login extends Component {
     }
 
     externalAuthentication(withSession) {
-        const clientId = 'Website';
+        const clientId = 'ResourceManagerClientId';
         const callbackUrl = 'http://localhost:64950/callback';
         const stateValue = '75BCNvRlEGHpQRCT';
         const nonceValue = 'nonce';
