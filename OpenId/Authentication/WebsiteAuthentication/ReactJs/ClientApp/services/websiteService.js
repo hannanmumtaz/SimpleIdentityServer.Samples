@@ -18,5 +18,41 @@ module.exports = {
                 reject(e);
             });
         });
+    },
+    /**
+    * Send the confirmation code.
+    */
+    sendConfirmationCode: function (phoneNumber) {
+        return new Promise(function (resolve, reject) {
+            var data = JSON.stringify({ phone_number: phoneNumber });
+            $.ajax({
+                url: '/Home/SendConfirmationCode',
+                method: 'POST',
+                data: data,
+                contentType: 'application/json'
+            }).then(function (r) {
+                resolve(r);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });
+    },
+    /**
+     * Validate the confirmation code.
+     */
+    validateConfirmationCode: function (phoneNumber, confirmationCode) {
+        return new Promise(function (resolve, reject) {
+            var data = JSON.stringify({ phone_number: phoneNumber, confirmation_code: confirmationCode });
+            $.ajax({
+                url: '/Home/ConfirmConfirmationCode',
+                method: 'POST',
+                data: data,
+                contentType: 'application/json'
+            }).then(function (r) {
+                resolve(r);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });
     }
 };

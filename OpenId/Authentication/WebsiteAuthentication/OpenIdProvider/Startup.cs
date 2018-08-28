@@ -9,6 +9,7 @@ using SimpleBus.InMemory;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
+using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Host;
@@ -70,7 +71,18 @@ namespace WebSiteAuthentication.OpenIdProvider
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = false
-            });  // BASIC AUTHENTICATION
+            });  // LOGIN & PASSWORD
+            services.AddSmsAuthentication(mvcBuilder, _env, new SmsAuthenticationOptions
+            {
+                Message = "The activation code is {0}",
+                TwilioSmsCredentials= new SimpleIdentityServer.Twilio.Client.TwilioSmsCredentials
+                {
+                    AccountSid = "",
+                    AuthToken = "",
+                    FromNumber = "",
+                },
+                IsScimResourceAutomaticallyCreated = false
+            }); // SMS AUTHENTICATION.
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions());  // USER MANAGEMENT
         }
 

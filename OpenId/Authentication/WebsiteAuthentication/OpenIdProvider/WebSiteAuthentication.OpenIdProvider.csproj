@@ -32,6 +32,7 @@
 	  <PackageReference Include="SimpleIdentityServer.Store.InMemory" Version="3.0.0.4" />
 	  <PackageReference Include="SimpleIdentityServer.UserManagement" Version="3.0.0.4" />
     <PackageReference Include="SimpleIdentityServer.Authenticate.LoginPassword" Version="3.0.0.4" />
+    <PackageReference Include="SimpleIdentityServer.Authenticate.SMS" Version="3.0.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -23,10 +23,14 @@ class Login extends Component {
         this.handleLocalAuthenticate = this.handleLocalAuthenticate.bind(this);
         this.handleExternalAuthenticate = this.handleExternalAuthenticate.bind(this);
         this.handleExternalAuthenticateWithSession = this.handleExternalAuthenticateWithSession.bind(this);
+        this.handleSendConfirmationCode = this.handleSendConfirmationCode.bind(this);
+        this.handleValidateConfirmationCode = this.handleValidateConfirmationCode.bind(this);
         this.externalAuthentication = this.externalAuthentication.bind(this);
         this.state = {
             login: '',
             password: '',
+            phoneNumber: '',
+            confirmationCode: '',
             isAuthenticateLoading: false
         };
     }
@@ -79,6 +83,45 @@ class Login extends Component {
             isAuthenticateLoading: true
         });
         self.externalAuthentication(true);
+    }
+
+    handleSendConfirmationCode() {
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        WebsiteService.sendConfirmationCode(self.state.phoneNumber).then(function () {
+            self.setState({
+                isLoading: false
+            });
+        }).catch(function () {
+            self.setState({
+                isLoading: false
+            });
+        });
+    }
+
+    handleValidateConfirmationCode() {
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        WebsiteService.validateConfirmationCode(self.state.phoneNumber, self.state.confirmationCode).then(function (result) {
+            var user = result;
+            user['with_session'] = false;
+            AppDispatcher.dispatch({
+                actionName: Constants.events.USER_LOGGED_IN,
+                data: user
+            });
+            self.setState({
+                isAuthenticateLoading: false
+            });
+            self.props.history.push('/');
+        }).catch(function () {
+            self.setState({
+                isLoading: false
+            });
+        });
     }
 
     externalAuthentication(withSession) {
@@ -259,6 +302,51 @@ class Login extends Component {
                                     </TableBody>
                                 </Table>
                                 <Button color="primary" variant="raised" onClick={self.handleExternalAuthenticateWithSession}>External authentication with session</Button>
+                            </div>
+                        )}
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Paper className={classes.padding}>
+                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
+                            <div>
+                                <Typography variant="subheading">
+                                    SMS Passwordless authentication (grant-type = password)
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>password</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the access token is expired</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is disconnected by removing the item stored in the session storage</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                                <div>
+                                    {/* Phone number */}
+                                    <FormControl fullWidth={true} className={classes.margin}>
+                                        <InputLabel>Phone number</InputLabel>
+                                        <Input value={self.state.phoneNumber} name="phoneNumber" onChange={self.handleChangeProperty} />
+                                        <FormHelperText>Enter your phone number</FormHelperText>
+                                    </FormControl>
+                                        <Button color="primary" variant="raised" onClick={self.handleSendConfirmationCode}>Send confirmation code</Button>
+                                </div>
+                                <div>
+                                    {/* Confirmation code number */}
+                                    <FormControl fullWidth={true} className={classes.margin}>
+                                        <InputLabel>Confirmation code</InputLabel>
+                                        <Input value={self.state.confirmationCode} name="confirmationCode" onChange={self.handleChangeProperty} />
+                                        <FormHelperText>Enter your confirmation code</FormHelperText>
+                                    </FormControl>
+                                    <Button color="primary" variant="raised" onClick={self.handleValidateConfirmationCode}>Validate confirmation code</Button>
+                                </div>
                             </div>
                         )}
                     </Paper>

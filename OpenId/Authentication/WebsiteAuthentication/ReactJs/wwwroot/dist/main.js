@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "cccb7c16cf7130fd8223"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b643e8e3013a8341666b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -46482,10 +46482,14 @@ var Login = function (_Component) {
         _this.handleLocalAuthenticate = _this.handleLocalAuthenticate.bind(_this);
         _this.handleExternalAuthenticate = _this.handleExternalAuthenticate.bind(_this);
         _this.handleExternalAuthenticateWithSession = _this.handleExternalAuthenticateWithSession.bind(_this);
+        _this.handleSendConfirmationCode = _this.handleSendConfirmationCode.bind(_this);
+        _this.handleValidateConfirmationCode = _this.handleValidateConfirmationCode.bind(_this);
         _this.externalAuthentication = _this.externalAuthentication.bind(_this);
         _this.state = {
             login: '',
             password: '',
+            phoneNumber: '',
+            confirmationCode: '',
             isAuthenticateLoading: false
         };
         return _this;
@@ -46542,6 +46546,47 @@ var Login = function (_Component) {
                 isAuthenticateLoading: true
             });
             self.externalAuthentication(true);
+        }
+    }, {
+        key: 'handleSendConfirmationCode',
+        value: function handleSendConfirmationCode() {
+            var self = this;
+            self.setState({
+                isLoading: true
+            });
+            _services.WebsiteService.sendConfirmationCode(self.state.phoneNumber).then(function () {
+                self.setState({
+                    isLoading: false
+                });
+            }).catch(function () {
+                self.setState({
+                    isLoading: false
+                });
+            });
+        }
+    }, {
+        key: 'handleValidateConfirmationCode',
+        value: function handleValidateConfirmationCode() {
+            var self = this;
+            self.setState({
+                isLoading: true
+            });
+            _services.WebsiteService.validateConfirmationCode(self.state.phoneNumber, self.state.confirmationCode).then(function (result) {
+                var user = result;
+                user['with_session'] = false;
+                AppDispatcher.dispatch({
+                    actionName: _constants2.default.events.USER_LOGGED_IN,
+                    data: user
+                });
+                self.setState({
+                    isAuthenticateLoading: false
+                });
+                self.props.history.push('/');
+            }).catch(function () {
+                self.setState({
+                    isLoading: false
+                });
+            });
         }
     }, {
         key: 'externalAuthentication',
@@ -46897,6 +46942,125 @@ var Login = function (_Component) {
                                     _materialUi.Button,
                                     { color: 'primary', variant: 'raised', onClick: self.handleExternalAuthenticateWithSession },
                                     'External authentication with session'
+                                )
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _materialUi.Grid,
+                        { item: true, xs: 12, sm: 4 },
+                        _react2.default.createElement(
+                            _materialUi.Paper,
+                            { className: classes.padding },
+                            self.state.isAuthenticateLoading ? _react2.default.createElement(
+                                'span',
+                                null,
+                                'Loading ...'
+                            ) : _react2.default.createElement(
+                                'div',
+                                null,
+                                _react2.default.createElement(
+                                    _materialUi.Typography,
+                                    { variant: 'subheading' },
+                                    'SMS Passwordless authentication (grant-type = password)'
+                                ),
+                                _react2.default.createElement(
+                                    _materialUi.Table,
+                                    null,
+                                    _react2.default.createElement(
+                                        _materialUi.TableBody,
+                                        null,
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Grant-Type'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'password'
+                                            )
+                                        ),
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Session expiration'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'The user is automatically disconnected when the access token is expired'
+                                            )
+                                        ),
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Disconnect'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'The user is disconnected by removing the item stored in the session storage'
+                                            )
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    null,
+                                    _react2.default.createElement(
+                                        _Form.FormControl,
+                                        { fullWidth: true, className: classes.margin },
+                                        _react2.default.createElement(
+                                            _Input.InputLabel,
+                                            null,
+                                            'Phone number'
+                                        ),
+                                        _react2.default.createElement(_Input2.default, { value: self.state.phoneNumber, name: 'phoneNumber', onChange: self.handleChangeProperty }),
+                                        _react2.default.createElement(
+                                            _Form.FormHelperText,
+                                            null,
+                                            'Enter your phone number'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        _materialUi.Button,
+                                        { color: 'primary', variant: 'raised', onClick: self.handleSendConfirmationCode },
+                                        'Send confirmation code'
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    null,
+                                    _react2.default.createElement(
+                                        _Form.FormControl,
+                                        { fullWidth: true, className: classes.margin },
+                                        _react2.default.createElement(
+                                            _Input.InputLabel,
+                                            null,
+                                            'Confirmation code'
+                                        ),
+                                        _react2.default.createElement(_Input2.default, { value: self.state.confirmationCode, name: 'confirmationCode', onChange: self.handleChangeProperty }),
+                                        _react2.default.createElement(
+                                            _Form.FormHelperText,
+                                            null,
+                                            'Enter your confirmation code'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        _materialUi.Button,
+                                        { color: 'primary', variant: 'raised', onClick: self.handleValidateConfirmationCode },
+                                        'Validate confirmation code'
+                                    )
                                 )
                             )
                         )
@@ -47256,6 +47420,42 @@ module.exports = {
                 contentType: 'application/json'
             }).then(function (data) {
                 resolve(data);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });
+    },
+    /**
+    * Send the confirmation code.
+    */
+    sendConfirmationCode: function sendConfirmationCode(phoneNumber) {
+        return new Promise(function (resolve, reject) {
+            var data = JSON.stringify({ phone_number: phoneNumber });
+            _jquery2.default.ajax({
+                url: '/Home/SendConfirmationCode',
+                method: 'POST',
+                data: data,
+                contentType: 'application/json'
+            }).then(function (r) {
+                resolve(r);
+            }).fail(function (e) {
+                reject(e);
+            });
+        });
+    },
+    /**
+     * Validate the confirmation code.
+     */
+    validateConfirmationCode: function validateConfirmationCode(phoneNumber, confirmationCode) {
+        return new Promise(function (resolve, reject) {
+            var data = JSON.stringify({ phone_number: phoneNumber, confirmation_code: confirmationCode });
+            _jquery2.default.ajax({
+                url: '/Home/ConfirmConfirmationCode',
+                method: 'POST',
+                data: data,
+                contentType: 'application/json'
+            }).then(function (r) {
+                resolve(r);
             }).fail(function (e) {
                 reject(e);
             });
