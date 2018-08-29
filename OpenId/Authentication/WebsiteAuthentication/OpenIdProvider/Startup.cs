@@ -55,6 +55,16 @@ namespace WebSiteAuthentication.OpenIdProvider
             ConfigureLogging(services);
             ConfigureBus(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
+            services.AddAuthentication(Constants.ExternalCookieName)
+                .AddCookie(Constants.ExternalCookieName)
+                .AddFacebook(opts =>
+                {
+                    opts.ClientId = "569242033233529";
+                    opts.ClientSecret = "12e0f33817634c0a650c0121d05e53eb";
+                    opts.SignInScheme = Constants.ExternalCookieName;
+                    opts.Scope.Add("public_profile");
+                    opts.Scope.Add("email");
+                });
             services.AddAuthentication("SimpleIdentityServer-TwoFactorAuth")
                 .AddCookie("SimpleIdentityServer-TwoFactorAuth");
             services.AddAuthentication(Constants.CookieName)
@@ -86,9 +96,9 @@ namespace WebSiteAuthentication.OpenIdProvider
                 Message = "The activation code is {0}",
                 TwilioSmsCredentials= new SimpleIdentityServer.Twilio.Client.TwilioSmsCredentials
                 {
-                    AccountSid = "",
-                    AuthToken = "",
-                    FromNumber = "",
+                    AccountSid = "AC00101f6a209ad3a50d818707d4d95954",
+                    AuthToken = "4bc240a797d11cb7d325a97c787f434c",
+                    FromNumber = "+41798073234"
                 },
                 IsScimResourceAutomaticallyCreated = false
             }); // SMS AUTHENTICATION.
