@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b643e8e3013a8341666b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "713c46ed36e94a85c8e5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -46484,6 +46484,7 @@ var Login = function (_Component) {
         _this.handleExternalAuthenticateWithSession = _this.handleExternalAuthenticateWithSession.bind(_this);
         _this.handleSendConfirmationCode = _this.handleSendConfirmationCode.bind(_this);
         _this.handleValidateConfirmationCode = _this.handleValidateConfirmationCode.bind(_this);
+        _this.handlePasswordLessExternalAuthenticate = _this.handlePasswordLessExternalAuthenticate.bind(_this);
         _this.externalAuthentication = _this.externalAuthentication.bind(_this);
         _this.state = {
             login: '',
@@ -46536,7 +46537,7 @@ var Login = function (_Component) {
             self.setState({
                 isAuthenticateLoading: true
             });
-            self.externalAuthentication(false);
+            self.externalAuthentication(false, false);
         }
     }, {
         key: 'handleExternalAuthenticateWithSession',
@@ -46545,7 +46546,16 @@ var Login = function (_Component) {
             self.setState({
                 isAuthenticateLoading: true
             });
-            self.externalAuthentication(true);
+            self.externalAuthentication(true, false);
+        }
+    }, {
+        key: 'handlePasswordLessExternalAuthenticate',
+        value: function handlePasswordLessExternalAuthenticate() {
+            var self = this;
+            self.setState({
+                isAuthenticateLoading: true
+            });
+            self.externalAuthentication(false, true);
         }
     }, {
         key: 'handleSendConfirmationCode',
@@ -46590,7 +46600,7 @@ var Login = function (_Component) {
         }
     }, {
         key: 'externalAuthentication',
-        value: function externalAuthentication(withSession) {
+        value: function externalAuthentication(withSession, withSms) {
             var clientId = 'ResourceManagerClientId';
             var callbackUrl = 'http://localhost:64950/callback';
             var stateValue = '75BCNvRlEGHpQRCT';
@@ -46610,6 +46620,10 @@ var Login = function (_Component) {
                 isLoading: true
             });
             var url = "http://localhost:60000/authorization?scope=openid role profile&state=" + stateValue + "&redirect_uri=" + callbackUrl + "&response_type=id_token token&client_id=" + clientId + "&nonce=" + nonceValue + "&response_mode=query";
+            if (withSms) {
+                url += "&amr_values=sms";
+            }
+
             var w = window.open(url, '_blank');
             var interval = setInterval(function () {
                 if (w.closed) {
@@ -47061,6 +47075,82 @@ var Login = function (_Component) {
                                         { color: 'primary', variant: 'raised', onClick: self.handleValidateConfirmationCode },
                                         'Validate confirmation code'
                                     )
+                                )
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _materialUi.Grid,
+                        { item: true, xs: 12, sm: 4 },
+                        _react2.default.createElement(
+                            _materialUi.Paper,
+                            { className: classes.padding },
+                            self.state.isAuthenticateLoading ? _react2.default.createElement(
+                                'span',
+                                null,
+                                'Loading ...'
+                            ) : _react2.default.createElement(
+                                'div',
+                                null,
+                                _react2.default.createElement(
+                                    _materialUi.Typography,
+                                    { variant: 'subheading' },
+                                    'SMS Passwordless authentication (grant-type = implicit)'
+                                ),
+                                _react2.default.createElement(
+                                    _materialUi.Table,
+                                    null,
+                                    _react2.default.createElement(
+                                        _materialUi.TableBody,
+                                        null,
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Grant-Type'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'implicit'
+                                            )
+                                        ),
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Session expiration'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'The user is automatically disconnected when the access token is expired'
+                                            )
+                                        ),
+                                        _react2.default.createElement(
+                                            _materialUi.TableRow,
+                                            null,
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'Disconnect'
+                                            ),
+                                            _react2.default.createElement(
+                                                _materialUi.TableCell,
+                                                null,
+                                                'The user is disconnected by removing the item stored in the session storage'
+                                            )
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    _materialUi.Button,
+                                    { color: 'primary', variant: 'raised', onClick: self.handlePasswordLessExternalAuthenticate },
+                                    'External authentication without session'
                                 )
                             )
                         )

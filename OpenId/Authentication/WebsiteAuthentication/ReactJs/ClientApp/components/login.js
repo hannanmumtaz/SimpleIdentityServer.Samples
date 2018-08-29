@@ -25,6 +25,7 @@ class Login extends Component {
         this.handleExternalAuthenticateWithSession = this.handleExternalAuthenticateWithSession.bind(this);
         this.handleSendConfirmationCode = this.handleSendConfirmationCode.bind(this);
         this.handleValidateConfirmationCode = this.handleValidateConfirmationCode.bind(this);
+		this.handlePasswordLessExternalAuthenticate = this.handlePasswordLessExternalAuthenticate.bind(this);
         this.externalAuthentication = this.externalAuthentication.bind(this);
         this.state = {
             login: '',
@@ -74,7 +75,7 @@ class Login extends Component {
         self.setState({
             isAuthenticateLoading: true
         });
-        self.externalAuthentication(false);
+        self.externalAuthentication(false, false);
     }
 
     handleExternalAuthenticateWithSession() {
@@ -82,8 +83,16 @@ class Login extends Component {
         self.setState({
             isAuthenticateLoading: true
         });
-        self.externalAuthentication(true);
+        self.externalAuthentication(true, false);
     }
+	
+	handlePasswordLessExternalAuthenticate() {
+        var self = this;
+        self.setState({
+            isAuthenticateLoading: true
+        });
+        self.externalAuthentication(false, true);		
+	}
 
     handleSendConfirmationCode() {
         var self = this;
@@ -124,7 +133,7 @@ class Login extends Component {
         });
     }
 
-    externalAuthentication(withSession) {
+    externalAuthentication(withSession, withSms) {
         const clientId = 'ResourceManagerClientId';
         const callbackUrl = 'http://localhost:64950/callback';
         const stateValue = '75BCNvRlEGHpQRCT';
@@ -146,6 +155,10 @@ class Login extends Component {
         var url = "http://localhost:60000/authorization?scope=openid role profile&state="+stateValue+"&redirect_uri="
             + callbackUrl
             + "&response_type=id_token token&client_id=" + clientId + "&nonce=" + nonceValue +"&response_mode=query";
+		if (withSms) {
+			url += "&amr_values=sms";
+		}
+		
         var w = window.open(url, '_blank');
         var interval = setInterval(function () {
             if (w.closed) {
@@ -351,6 +364,34 @@ class Login extends Component {
                         )}
                     </Paper>
                 </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Paper className={classes.padding}>
+                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
+                            <div>
+                                <Typography variant="subheading">
+                                    SMS Passwordless authentication (grant-type = implicit)
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>implicit</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the access token is expired</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is disconnected by removing the item stored in the session storage</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                                <Button color="primary" variant="raised" onClick={self.handlePasswordLessExternalAuthenticate}>External authentication without session</Button>
+                            </div>
+                        )}
+                    </Paper>
+                </Grid>				
             </Grid>
         </div>);
     }
