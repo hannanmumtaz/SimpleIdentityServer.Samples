@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ManageScimResources.OpenIdProvider.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,17 +9,14 @@ using SimpleBus.Core;
 using SimpleIdentityServer.AccessToken.Store.InMemory;
 using SimpleIdentityServer.Authenticate.Basic;
 using SimpleIdentityServer.Authenticate.LoginPassword;
-using SimpleIdentityServer.Authenticate.SMS;
 using SimpleIdentityServer.EF;
 using SimpleIdentityServer.EF.InMemory;
 using SimpleIdentityServer.Host;
 using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Store.InMemory;
-using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
 using SimpleIdentityServer.UserManagement;
-using WebSiteAuthentication.OpenIdProvider.Services;
 
-namespace WebSiteAuthentication.OpenIdProvider
+namespace ManageScimResources.OpenIdProvider
 {
     public class Startup
     {
@@ -55,8 +53,6 @@ namespace WebSiteAuthentication.OpenIdProvider
             ConfigureLogging(services);
             ConfigureBus(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
-            services.AddAuthentication("SimpleIdentityServer-TwoFactorAuth")
-                .AddCookie("SimpleIdentityServer-TwoFactorAuth");
             services.AddAuthentication(Constants.CookieName)
                 .AddCookie(Constants.CookieName, opts =>
                 {
@@ -70,28 +66,10 @@ namespace WebSiteAuthentication.OpenIdProvider
             var mvcBuilder = services.AddMvc();
             services.AddOpenIdApi(_options); // API
             services.AddBasicShell(mvcBuilder, _env);  // SHELL
-            services.AddTwoFactorSmsAuthentication(new TwoFactorTwilioOptions
-            {
-                TwilioAccountSid = "",
-                TwilioAuthToken = "",
-                TwilioFromNumber = "",
-                TwilioMessage = "The activation code is {0}"
-            }); // SMS TWO FACTOR AUTHENTICATION.
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
             {
                 IsScimResourceAutomaticallyCreated = false
             });  // LOGIN & PASSWORD
-            services.AddSmsAuthentication(mvcBuilder, _env, new SmsAuthenticationOptions
-            {
-                Message = "The activation code is {0}",
-                TwilioSmsCredentials= new SimpleIdentityServer.Twilio.Client.TwilioSmsCredentials
-                {
-                    AccountSid = "",
-                    AuthToken = "",
-                    FromNumber = "",
-                },
-                IsScimResourceAutomaticallyCreated = false
-            }); // SMS AUTHENTICATION.
             services.AddUserManagement(mvcBuilder, _env, new UserManagementOptions());  // USER MANAGEMENT
         }
 

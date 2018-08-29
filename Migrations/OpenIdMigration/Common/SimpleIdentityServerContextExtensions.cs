@@ -93,6 +93,28 @@ namespace OpenIdMigration.Common
                         },
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
                         IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "test",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "test"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                                Value = "test"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true,
+                        TwoFactorAuthentication = "SMS"
                     }
                 });
             }
@@ -478,6 +500,10 @@ namespace OpenIdMigration.Common
                             new ClientScope
                             {
                                 ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "scim"
                             }
                         },
                         ClientName = "Website",

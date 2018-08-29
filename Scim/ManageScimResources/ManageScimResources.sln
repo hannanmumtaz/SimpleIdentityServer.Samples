@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Openid", "01. Openid", "{56CE5471-3CC3-4455-88D6-0C68A1DA52F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManageScimResources.OpenIdProvider", "ManageScimResources\OpenIdProvider\ManageScimResources.OpenIdProvider.csproj", "{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdMigration.Common", "..\..\Migrations\OpenIdMigration\Common\OpenIdMigration.Common.csproj", "{49201586-4629-4124-818E-763D9F517F5F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. SCIM", "02. SCIM", "{0ACCBD47-A12F-4244-A286-F510D73B94C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManageScimResources.ScimStartup", "ManageScimResources\ScimStartup\ManageScimResources.ScimStartup.csproj", "{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. Website", "03. Website", "{83CFBF59-6DF1-4642-8D05-68B6B0C8463B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManageScimResources.ReactJs", "ManageScimResources\ReactJs\ManageScimResources.ReactJs.csproj", "{0EE375C0-6B29-448A-B34A-DE659917573F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49201586-4629-4124-818E-763D9F517F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49201586-4629-4124-818E-763D9F517F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49201586-4629-4124-818E-763D9F517F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49201586-4629-4124-818E-763D9F517F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EE375C0-6B29-448A-B34A-DE659917573F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EE375C0-6B29-448A-B34A-DE659917573F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EE375C0-6B29-448A-B34A-DE659917573F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EE375C0-6B29-448A-B34A-DE659917573F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6EDAA550-6DA2-421D-BFA1-D82F397CA1D8} = {56CE5471-3CC3-4455-88D6-0C68A1DA52F2}
+		{49201586-4629-4124-818E-763D9F517F5F} = {56CE5471-3CC3-4455-88D6-0C68A1DA52F2}
+		{FB03C4EC-00B7-4B78-ABAC-AA4E1DA7C0FE} = {0ACCBD47-A12F-4244-A286-F510D73B94C4}
+		{0EE375C0-6B29-448A-B34A-DE659917573F} = {83CFBF59-6DF1-4642-8D05-68B6B0C8463B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {866B71D1-EE48-4B9B-85B9-A9692C4B8133}
+	EndGlobalSection
+EndGlobal

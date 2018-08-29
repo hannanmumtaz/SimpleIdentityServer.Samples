@@ -26,6 +26,7 @@ class Login extends Component {
         this.handleSendConfirmationCode = this.handleSendConfirmationCode.bind(this);
         this.handleValidateConfirmationCode = this.handleValidateConfirmationCode.bind(this);
 		this.handlePasswordLessExternalAuthenticate = this.handlePasswordLessExternalAuthenticate.bind(this);
+        this.handlePasswordLessExternalAuthenticateWithSession = this.handlePasswordLessExternalAuthenticateWithSession.bind(this);
         this.externalAuthentication = this.externalAuthentication.bind(this);
         this.state = {
             login: '',
@@ -92,7 +93,15 @@ class Login extends Component {
             isAuthenticateLoading: true
         });
         self.externalAuthentication(false, true);		
-	}
+    }
+
+    handlePasswordLessExternalAuthenticateWithSession() {
+        var self = this;
+        self.setState({
+            isAuthenticateLoading: true
+        });
+        self.externalAuthentication(true, true);
+    }
 
     handleSendConfirmationCode() {
         var self = this;
@@ -391,7 +400,35 @@ class Login extends Component {
                             </div>
                         )}
                     </Paper>
-                </Grid>				
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Paper className={classes.padding}>
+                        {self.state.isAuthenticateLoading ? (<span>Loading ...</span>) : (
+                            <div>
+                                <Typography variant="subheading">
+                                    SMS Passwordless authentication (grant-type = implicit & with session)
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>Grant-Type</TableCell>
+                                            <TableCell>Implicit workflow</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Session expiration</TableCell>
+                                            <TableCell>The user is automatically disconnected when the cookie of the OPENID server has expired or is invalid</TableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableCell>Disconnect</TableCell>
+                                            <TableCell>The user is redirected to the /end_session web page to remove the cookie</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                                <Button color="primary" variant="raised" onClick={self.handlePasswordLessExternalAuthenticateWithSession}>External authentication with session</Button>
+                            </div>
+                        )}
+                    </Paper>
+                </Grid>
             </Grid>
         </div>);
     }
