@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>  
-    <PackageReference Include="SimpleIdentityServer.EF" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.Core.Jwt" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.Core" Version="3.0.0.4" />
+    <PackageReference Include="SimpleIdentityServer.EF" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.Core.Jwt" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.Core" Version="3.0.0.5" />
   </ItemGroup>
 </Project>

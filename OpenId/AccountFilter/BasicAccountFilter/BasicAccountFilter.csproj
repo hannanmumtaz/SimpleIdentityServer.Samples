@@ -18,17 +18,17 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.1" /> 
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.0.3" />
-	  <PackageReference Include="SimpleBus.InMemory" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.EF.InMemory" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.Host" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.Shell" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.AccessToken.Store.InMemory" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.Store.InMemory" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.UserManagement" Version="3.0.0.4" />
-	  <PackageReference Include="SimpleIdentityServer.Authenticate.Basic" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.Authenticate.LoginPassword" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.AccountFilter.Basic" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.AccountFilter.Basic.EF.InMemory" Version="3.0.0.4" />
+	  <PackageReference Include="SimpleBus.InMemory" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.EF.InMemory" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.Host" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.Shell" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.AccessToken.Store.InMemory" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.Store.InMemory" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.UserManagement" Version="3.0.0.5" />
+	  <PackageReference Include="SimpleIdentityServer.Authenticate.Basic" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.Authenticate.LoginPassword" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.AccountFilter.Basic" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.AccountFilter.Basic.EF.InMemory" Version="3.0.0.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Migrations\OpenIdMigration\Common\OpenIdMigration.Common.csproj" />

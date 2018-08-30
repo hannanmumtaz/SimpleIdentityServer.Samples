@@ -55,7 +55,6 @@ namespace BasicAccountFilter
             ConfigureStorageInMemory(services);
             ConfigureLogging(services);
             ConfigureBus(services);
-            ConfigureAccountFilters(services);
             services.AddInMemoryAccessTokenStore(); // Add the access token into the memory.
             services.AddAuthentication(Constants.ExternalCookieName)
                 .AddCookie(Constants.ExternalCookieName)
@@ -78,6 +77,7 @@ namespace BasicAccountFilter
             });
             // 5. Configure MVC
             var mvcBuilder = services.AddMvc();
+            ConfigureAccountFilters(services, mvcBuilder);
             services.AddOpenIdApi(_options); // API
             services.AddBasicShell(mvcBuilder, _env);  // SHELL
             services.AddLoginPasswordAuthentication(mvcBuilder, _env, new BasicAuthenticateOptions
@@ -107,9 +107,9 @@ namespace BasicAccountFilter
             services.AddLogging();
         }
         
-        private void ConfigureAccountFilters(IServiceCollection services)
+        private void ConfigureAccountFilters(IServiceCollection services, IMvcBuilder mvcBuilder)
         {
-            services.AddAccountFilter();
+            services.AddAccountFilter(mvcBuilder);
             services.AddBasicAccountFilterInMemoryEF();
         }
 

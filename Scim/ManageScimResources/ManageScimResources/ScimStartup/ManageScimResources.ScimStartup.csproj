@@ -17,12 +17,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.0.2" />  
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
-    <PackageReference Include="WebApiContrib.Core.Concurrency" Version="3.0.0.4" />
-    <PackageReference Include="WebApiContrib.Core.Storage.InMemory" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.UserInfoIntrospection" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.OAuth2Introspection" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.Scim.Db.EF.InMemory" Version="3.0.0.4" />
-    <PackageReference Include="SimpleIdentityServer.Scim.Host" Version="3.0.0.4" />
+    <PackageReference Include="WebApiContrib.Core.Concurrency" Version="3.0.0.5" />
+    <PackageReference Include="WebApiContrib.Core.Storage.InMemory" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.UserInfoIntrospection" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.OAuth2Introspection" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.Scim.Db.EF.InMemory" Version="3.0.0.5" />
+    <PackageReference Include="SimpleIdentityServer.Scim.Host" Version="3.0.0.5" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
