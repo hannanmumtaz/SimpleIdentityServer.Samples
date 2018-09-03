@@ -11,7 +11,6 @@ namespace ApiProtection.ReactJs.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-        
+        }        
     }
 }

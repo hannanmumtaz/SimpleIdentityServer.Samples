@@ -25,7 +25,7 @@ namespace ApiProtection.MedicalPrescriptionsApi.Stores
 
         public async Task<MedicalRecordResponse> Get(string subject)
         {
-            var result = await _context.MedicalRecords.FirstOrDefaultAsync(r => r.Subject == subject).ConfigureAwait(false);
+            var result = await _context.MedicalRecords.Include(m => m.Prescriptions).FirstOrDefaultAsync(r => r.Subject == subject).ConfigureAwait(false);
             return result == null ? null : result.ToDto();
         }
 

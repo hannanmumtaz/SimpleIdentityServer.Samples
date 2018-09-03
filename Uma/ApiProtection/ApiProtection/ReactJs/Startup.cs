@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimpleIdentityServer.Client;
-using SimpleIdentityServer.UserInfoIntrospection;
+using SimpleIdentityServer.Uma.Client;
+using SimpleIdentityServer.Core.Jwt;
 
 namespace ApiProtection.ReactJs
 {
@@ -16,14 +17,11 @@ namespace ApiProtection.ReactJs
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(UserInfoIntrospectionOptions.AuthenticationScheme)
-                .AddUserInfoIntrospection(opts =>
-                {
-                    opts.WellKnownConfigurationUrl = "http://localhost:60000/.well-known/openid-configuration";
-                });
             RegisterServices(services);
             services.AddMvc();
             services.AddIdServerClient();
+            services.AddUmaClient();
+            services.AddSimpleIdentityServerJwt();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

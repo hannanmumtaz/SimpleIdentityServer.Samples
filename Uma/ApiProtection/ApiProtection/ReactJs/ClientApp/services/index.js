@@ -1,3 +1,3 @@
-﻿import OAuthService from './oauthService';
+﻿import PrescriptionService from './prescriptionService';
 
-exports.OAuthService = OAuthService;
+exports.PrescriptionService = PrescriptionService;

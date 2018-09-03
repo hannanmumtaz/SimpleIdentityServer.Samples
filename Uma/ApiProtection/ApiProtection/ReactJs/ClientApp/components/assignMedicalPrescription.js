@@ -1,8 +1,11 @@
 ﻿import React, { Component } from "react";
-import { Paper, Typography } from 'material-ui';
+import { Paper, Typography, CircularProgress, Button } from 'material-ui';
+import Input, { InputLabel } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
 import { withStyles } from 'material-ui/styles';
-import { OAuthService } from '../services';
-import { UserStore } from '../stores';
+import { PrescriptionService } from '../services';
+import AppDispatcher from '../appDispatcher';
+import Constants from '../constants';
 
 const styles = theme => ({
     margin: {
@@ -13,6 +16,54 @@ const styles = theme => ({
     }
 });
 class AssignMedicalPrescription extends Component {
+    constructor(props) {
+        super(props);
+        this.handleChangeProperty = this.handleChangeProperty.bind(this);
+        this.addMedicalPrescription = this.addMedicalPrescription.bind(this);
+        this.state = {
+            isLoading: false,
+            description: '',
+            subject: ''
+        };
+    }
+
+	/**
+    * Change the property.
+	**/
+    handleChangeProperty(e) {
+        var self = this;
+        self.setState({
+            [e.target.name]: e.target.value
+        });
+    }
+
+    /**
+     * Add medical prescription. 
+     **/
+    addMedicalPrescription() {
+        var self = this;
+        self.setState({
+            isLoading: true
+        });
+        PrescriptionService.addPrescription({ description: self.state.description, patient_subject: self.state.subject }).then(function () {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: 'Prescription has been assigned'
+            });
+        }).catch(function () {
+            self.setState({
+                isLoading: false
+            });
+            AppDispatcher.dispatch({
+                actionName: Constants.events.DISPLAY_MESSAGE,
+                data: 'An error occured while trying to assign the medical prescription'
+            });
+        });
+    }
+
     render() {
         var self = this;
         const { classes } = self.props;
@@ -21,29 +72,26 @@ class AssignMedicalPrescription extends Component {
                 <Typography variant="headline" component="h3">
                     Assign prescription
                 </Typography>
+                {self.state.isLoading ? (<CircularProgress />) : (
+                    <div>
+                        <FormControl fullWidth={true}>
+                            <InputLabel>Description</InputLabel>
+                            <Input name="description" onChange={self.handleChangeProperty} />
+                            <FormHelperText>Enter the desciption</FormHelperText>
+                        </FormControl>
+                        <FormControl fullWidth={true}>
+                            <InputLabel>Patient subject</InputLabel>
+                            <Input name="subject" onChange={self.handleChangeProperty} />
+                            <FormHelperText>Enter the patient subject</FormHelperText>
+                        </FormControl>
+                        <Button variant="raised" color="primary" onClick={self.addMedicalPrescription}>Add prescription</Button>
+                    </div>                    
+                )}
             </Paper>
         </div>);
     }
 
     componentDidMount() {
-        var getUmaToken = function () {
-            OAuthService.getUmaProtectionAccessToken().then(function (r) {
-                OAuthService.getPermissionTicket("1", ["write"], r['access_token']).then(function (ticketResult) {
-                    OAuthService.getAccessTokenWithUmaGrantType(ticketResult['ticket_id']).then(function (grantedToken) {
-                        console.log(grantedToken);
-                    });
-                });
-            });
-        };
-
-        UserStore.addLoginListener(function () {
-            getUmaToken();
-        });
-
-        var user = UserStore.getUser();
-        if (user && user['id_token']) {
-            getUmaToken();
-        }
     }
 }
 
