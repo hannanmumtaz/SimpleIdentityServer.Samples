@@ -115,6 +115,69 @@ namespace OpenIdMigration.Common
                         Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
                         IsLocalAccount = true,
                         TwoFactorAuthentication = "SMS"
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "patient",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "patient"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                                Value = "patient"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "doctor",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "doctor"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                                Value = "doctor"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "pharmacist",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "pharmacist"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
+                                Value = "pharmacist"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true
                     }
                 });
             }

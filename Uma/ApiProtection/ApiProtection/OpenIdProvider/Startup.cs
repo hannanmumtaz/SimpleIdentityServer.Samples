@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ApiProtection.OpenIdProvider.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,9 +17,8 @@ using SimpleIdentityServer.Shell;
 using SimpleIdentityServer.Store.InMemory;
 using SimpleIdentityServer.TwoFactorAuthentication.Twilio;
 using SimpleIdentityServer.UserManagement;
-using WebSiteAuthentication.OpenIdProvider.Services;
 
-namespace WebSiteAuthentication.OpenIdProvider
+namespace ApiProtection.OpenIdProvider
 {
     public class Startup
     {
