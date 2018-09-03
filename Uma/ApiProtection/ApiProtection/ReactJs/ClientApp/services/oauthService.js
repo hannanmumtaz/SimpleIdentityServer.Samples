@@ -27,7 +27,7 @@ module.exports = {
     getAccessTokenWithUmaGrantType: function (ticket) {
         return new Promise(function (resolve, reject) {
             var user = UserStore.getUser();
-            var data = { client_id: Constants.clientId, client_secret: Constants.clientSecret, ticket: ticket, grant_type: 'uma_ticket', claim_token: user['id_token'] };
+            var data = { client_id: Constants.clientId, client_secret: Constants.clientSecret, ticket: ticket, grant_type: 'uma_ticket', claim_token: user['id_token'], claim_token_format: 'http://openid.net/specs/openid-connect-core-1_0.html#IDToken' };
             const searchParams = Object.keys(data).map((key) => {
                 return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
             }).join('&');

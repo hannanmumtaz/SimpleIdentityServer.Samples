@@ -121,11 +121,6 @@ namespace ApiProtection.MedicalPrescriptionsApi.Controllers
                 return false;
             }
 
-            _identityServerUmaClientFactory.GetPermissionClient().AddByResolution(new PostPermission
-            {
-
-            }, "", "")
-
             return true;
         }
 

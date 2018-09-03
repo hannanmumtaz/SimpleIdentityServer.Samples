@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "35b45ac827bb9cc5ac6b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "dc1b4f8cedd85135a375"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -99274,7 +99274,7 @@ module.exports = {
     getAccessTokenWithUmaGrantType: function getAccessTokenWithUmaGrantType(ticket) {
         return new Promise(function (resolve, reject) {
             var user = _stores.UserStore.getUser();
-            var data = { client_id: _constants2.default.clientId, client_secret: _constants2.default.clientSecret, ticket: ticket, grant_type: 'uma_ticket', claim_token: user['id_token'] };
+            var data = { client_id: _constants2.default.clientId, client_secret: _constants2.default.clientSecret, ticket: ticket, grant_type: 'uma_ticket', claim_token: user['id_token'], claim_token_format: 'http://openid.net/specs/openid-connect-core-1_0.html#IDToken' };
             var searchParams = Object.keys(data).map(function (key) {
                 return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
             }).join('&');
