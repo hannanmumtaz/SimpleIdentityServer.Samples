@@ -118,14 +118,35 @@ namespace OpenIdMigration.Common
                     },
                     new ResourceOwner
                     {
-                        Id = "patient",
+                        Id = "patient1",
                         Claims = new List<ResourceOwnerClaim>
                         {
                             new ResourceOwnerClaim
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "patient1"
+                            },
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Role,
                                 Value = "patient"
+                            }
+                        },
+                        Password = "5E884898DA28047151D0E56F8DC6292773603D0D6AABBDD62A11EF721D1542D8",
+                        IsLocalAccount = true
+                    },
+                    new ResourceOwner
+                    {
+                        Id = "patient2",
+                        Claims = new List<ResourceOwnerClaim>
+                        {
+                            new ResourceOwnerClaim
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                ClaimCode = SimpleIdentityServer.Core.Jwt.Constants.StandardResourceOwnerClaimNames.Subject,
+                                Value = "patient2"
                             },
                             new ResourceOwnerClaim
                             {

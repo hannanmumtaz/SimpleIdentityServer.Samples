@@ -1,14 +1,15 @@
 ﻿import React, { Component } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button } from 'material-ui';
+import { AppBar, Toolbar, Typography, Button, Snackbar } from 'material-ui';
 import { UserStore } from './stores';
 import moment from 'moment';
 import Constants from './constants';
-var AppDispatcher = require('./appDispatcher');
+import AppDispatcher from './appDispatcher';
 
 class Layout extends Component {
     constructor(props) {
         super(props);
+        this._appDispatcher = null;
         this._sessionFrame = null;
         this._interval = null;
         this._checkSession = false;
@@ -17,10 +18,15 @@ class Layout extends Component {
         this.handleUserLogout = this.handleUserLogout.bind(this);
         this.handleClickLogout = this.handleClickLogout.bind(this);
         this.handleCheckSession = this.handleCheckSession.bind(this);
+        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+        this.displayMessage = this.displayMessage.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.state = {
             checkSession : false,
-            isLoggedIn: false
+            isLoggedIn: false,
+            snackbarMessage: '',
+            isSnackbarOpened: false,
+            role: ''
         };
     }
 
@@ -28,12 +34,33 @@ class Layout extends Component {
         this.props.history.push(href);
     }
 
+    /**
+    * Snackbar is closed.
+    */
+    handleSnackbarClose(message) {
+        this.setState({
+            isSnackbarOpened: false
+        });
+    }
+
+    /**
+    * Display the message in the snackbar.
+    */
+    displayMessage(message) {
+        this.setState({
+            isSnackbarOpened: true,
+            snackbarMessage: message
+        });
+    }
+
     handleUserLogin() {
         var self = this;
         var user = UserStore.getUser();
+        var userInfo = UserStore.getUserInfo();
         var withSession = user['with_session'];
         this.setState({
-            isLoggedIn: true
+            isLoggedIn: true,
+            role: userInfo['role']
         });
         if (!withSession) {
             // CHECK THE ACCESS TOKEN VALIDITY.
@@ -156,9 +183,13 @@ class Layout extends Component {
                 <Toolbar>
                     <Typography variant="title" color="inherit">Website Authentication</Typography>
                     <Button color="inherit" onClick={() => self.navigate('/about')}>About</Button>
-                    <Button color="inherit" onClick={() => self.navigate('/prescriptions')}>Prescriptions</Button>
-                    <Button color="inherit" onClick={() => self.navigate('/prescriptions/assign')}>Assign prescription</Button>
-                    {!self.state.isLoggedIn && (
+                    {self.state.isLoggedIn && self.state.role === 'patient' && (
+                        <Button color="inherit" onClick={() => self.navigate('/prescriptions')}>My prescriptions</Button>                        
+                    )}
+                    {self.state.isLoggedIn && self.state.role === 'doctor' && (
+                        <Button color="inherit" onClick={() => self.navigate('/prescriptions/assign')}>Assign prescription</Button>
+                    )}
+                    {!self.state.isLoggedIn  && (
                         <Button color="inherit" onClick={() => self.navigate('/login')}>Login</Button>                        
                     )}
                     {self.state.isLoggedIn && (
@@ -173,11 +204,19 @@ class Layout extends Component {
                     <iframe ref={(elt) => { self._sessionFrame = elt; self.handleCheckSession(); }} id="session-frame" src="http://localhost:60000/check_session" style={{display: "none"}} /> 
                 </div>
             )}
+            <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={self.state.isSnackbarOpened} onClose={self.handleSnackbarClose} message={<span>{self.state.snackbarMessage}</span>} />
         </div>);
     }
 
     componentDidMount() {
         var self = this;
+        self._appDispatcher = AppDispatcher.register(function (payload) {
+            switch (payload.actionName) {
+                case Constants.events.DISPLAY_MESSAGE:
+                    self.displayMessage(payload.data);
+                    break;
+            }
+        });
         var authenticatedUser = UserStore.getUser();
         if (authenticatedUser && authenticatedUser['id_token']) {
             self.handleUserLogin();
@@ -187,6 +226,9 @@ class Layout extends Component {
         UserStore.addLogoutListener(self.handleUserLogout);
     }
 
+    componentWillUnmount() {
+        AppDispatcher.unregister(this._appDispatcher);
+    }
 }
 
 export default withRouter(Layout);

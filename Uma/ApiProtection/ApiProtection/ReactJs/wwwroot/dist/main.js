@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "c7d0dda362a48f24f8e9"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "1fadac8b8b468d27f527"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -46479,7 +46479,7 @@ var AssignMedicalPrescription = function (_Component) {
         _this.state = {
             isLoading: false,
             description: '',
-            subject: ''
+            subject: 'patient1'
         };
         return _this;
     }
@@ -46553,11 +46553,11 @@ var AssignMedicalPrescription = function (_Component) {
                                 null,
                                 'Description'
                             ),
-                            _react2.default.createElement(_Input2.default, { name: 'description', onChange: self.handleChangeProperty }),
+                            _react2.default.createElement(_Input2.default, { name: 'description', value: self.state.description, onChange: self.handleChangeProperty }),
                             _react2.default.createElement(
                                 _Form.FormHelperText,
                                 null,
-                                'Enter the desciption'
+                                'Enter the prescription desciption'
                             )
                         ),
                         _react2.default.createElement(
@@ -46568,7 +46568,20 @@ var AssignMedicalPrescription = function (_Component) {
                                 null,
                                 'Patient subject'
                             ),
-                            _react2.default.createElement(_Input2.default, { name: 'subject', onChange: self.handleChangeProperty }),
+                            _react2.default.createElement(
+                                _materialUi.Select,
+                                { value: self.state.subject, onChange: self.handleChangeProperty, name: 'subject' },
+                                _react2.default.createElement(
+                                    _materialUi.MenuItem,
+                                    { value: 'patient1' },
+                                    'patient1'
+                                ),
+                                _react2.default.createElement(
+                                    _materialUi.MenuItem,
+                                    { value: 'patient2' },
+                                    'patient2'
+                                )
+                            ),
                             _react2.default.createElement(
                                 _Form.FormHelperText,
                                 null,
@@ -46960,7 +46973,8 @@ var MedicalPrescriptions = function (_Component) {
 
         _this.refreshData = _this.refreshData.bind(_this);
         _this.state = {
-            isLoading: true
+            isLoading: true,
+            medicalPrescriptions: []
         };
         return _this;
     }
@@ -46969,14 +46983,49 @@ var MedicalPrescriptions = function (_Component) {
         key: 'refreshData',
         value: function refreshData() {
             var self = this;
+            self.setState({
+                isLoading: true
+            });
             _services.PrescriptionService.getPrescriptions().then(function (result) {
-                console.log(result);
-            }).catch(function () {});
+                self.setState({
+                    isLoading: false,
+                    medicalPrescriptions: result.prescriptions
+                });
+            }).catch(function () {
+                self.setState({
+                    isLoading: false,
+                    medicalPrescriptions: []
+                });
+            });
         }
     }, {
         key: 'render',
         value: function render() {
             var self = this;
+            var medicalPrescriptions = [];
+            if (self.state.medicalPrescriptions) {
+                self.state.medicalPrescriptions.forEach(function (medicalPrescription) {
+                    medicalPrescriptions.push(_react2.default.createElement(
+                        _materialUi.ListItem,
+                        null,
+                        _react2.default.createElement(
+                            _materialUi.ListItemAvatar,
+                            null,
+                            _react2.default.createElement(
+                                'b',
+                                null,
+                                medicalPrescription['doctor_subject']
+                            )
+                        ),
+                        _react2.default.createElement(
+                            _materialUi.ListItemText,
+                            null,
+                            medicalPrescription['description']
+                        )
+                    ));
+                });
+            }
+
             var classes = self.props.classes;
 
             return _react2.default.createElement(
@@ -46989,6 +47038,11 @@ var MedicalPrescriptions = function (_Component) {
                         _materialUi.Typography,
                         { variant: 'headline', component: 'h3' },
                         'Prescriptions'
+                    ),
+                    self.state.isLoading ? _react2.default.createElement(_materialUi.CircularProgress, null) : _react2.default.createElement(
+                        _materialUi.List,
+                        null,
+                        medicalPrescriptions
                     )
                 )
             );
@@ -47043,6 +47097,10 @@ var _constants = __webpack_require__(57);
 
 var _constants2 = _interopRequireDefault(_constants);
 
+var _appDispatcher = __webpack_require__(74);
+
+var _appDispatcher2 = _interopRequireDefault(_appDispatcher);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -47050,8 +47108,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AppDispatcher = __webpack_require__(74);
 
 var Layout = function (_Component) {
     _inherits(Layout, _Component);
@@ -47061,6 +47117,7 @@ var Layout = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (Layout.__proto__ || Object.getPrototypeOf(Layout)).call(this, props));
 
+        _this._appDispatcher = null;
         _this._sessionFrame = null;
         _this._interval = null;
         _this._checkSession = false;
@@ -47069,10 +47126,15 @@ var Layout = function (_Component) {
         _this.handleUserLogout = _this.handleUserLogout.bind(_this);
         _this.handleClickLogout = _this.handleClickLogout.bind(_this);
         _this.handleCheckSession = _this.handleCheckSession.bind(_this);
+        _this.handleSnackbarClose = _this.handleSnackbarClose.bind(_this);
+        _this.displayMessage = _this.displayMessage.bind(_this);
         _this.handleMessage = _this.handleMessage.bind(_this);
         _this.state = {
             checkSession: false,
-            isLoggedIn: false
+            isLoggedIn: false,
+            snackbarMessage: '',
+            isSnackbarOpened: false,
+            role: ''
         };
         return _this;
     }
@@ -47082,14 +47144,41 @@ var Layout = function (_Component) {
         value: function navigate(href) {
             this.props.history.push(href);
         }
+
+        /**
+        * Snackbar is closed.
+        */
+
+    }, {
+        key: 'handleSnackbarClose',
+        value: function handleSnackbarClose(message) {
+            this.setState({
+                isSnackbarOpened: false
+            });
+        }
+
+        /**
+        * Display the message in the snackbar.
+        */
+
+    }, {
+        key: 'displayMessage',
+        value: function displayMessage(message) {
+            this.setState({
+                isSnackbarOpened: true,
+                snackbarMessage: message
+            });
+        }
     }, {
         key: 'handleUserLogin',
         value: function handleUserLogin() {
             var self = this;
             var user = _stores.UserStore.getUser();
+            var userInfo = _stores.UserStore.getUserInfo();
             var withSession = user['with_session'];
             this.setState({
-                isLoggedIn: true
+                isLoggedIn: true,
+                role: userInfo['role']
             });
             if (!withSession) {
                 // CHECK THE ACCESS TOKEN VALIDITY.
@@ -47098,7 +47187,7 @@ var Layout = function (_Component) {
                     if (!user['access_token']) {
                         clearInterval(self._interval);
                         self._interval = null;
-                        AppDispatcher.dispatch({
+                        _appDispatcher2.default.dispatch({
                             actionName: _constants2.default.events.USER_LOGGED_OUT
                         });
                         return;
@@ -47111,7 +47200,7 @@ var Layout = function (_Component) {
                     if (expirationTime < now) {
                         clearInterval(self._interval);
                         self._interval = null;
-                        AppDispatcher.dispatch({
+                        _appDispatcher2.default.dispatch({
                             actionName: _constants2.default.events.USER_LOGGED_OUT
                         });
                     }
@@ -47146,7 +47235,7 @@ var Layout = function (_Component) {
             var user = _stores.UserStore.getUser();
             var withSession = user['with_session'];
             if (!withSession) {
-                AppDispatcher.dispatch({
+                _appDispatcher2.default.dispatch({
                     actionName: _constants2.default.events.USER_LOGGED_OUT
                 });
                 return;
@@ -47164,7 +47253,7 @@ var Layout = function (_Component) {
                 if (href === "http://localhost:64950/end_session") {
                     clearInterval(interval);
                     w.close();
-                    AppDispatcher.dispatch({
+                    _appDispatcher2.default.dispatch({
                         actionName: _constants2.default.events.USER_LOGGED_OUT
                     });
                 }
@@ -47201,7 +47290,7 @@ var Layout = function (_Component) {
             var self = this;
             if (e.data === 'error' || e.data === 'changed') {
                 console.log(e.data);
-                AppDispatcher.dispatch({
+                _appDispatcher2.default.dispatch({
                     actionName: _constants2.default.events.USER_LOGGED_OUT
                 });
                 self.props.history.push('/');
@@ -47232,14 +47321,14 @@ var Layout = function (_Component) {
                                 } },
                             'About'
                         ),
-                        _react2.default.createElement(
+                        self.state.isLoggedIn && self.state.role === 'patient' && _react2.default.createElement(
                             _materialUi.Button,
                             { color: 'inherit', onClick: function onClick() {
                                     return self.navigate('/prescriptions');
                                 } },
-                            'Prescriptions'
+                            'My prescriptions'
                         ),
-                        _react2.default.createElement(
+                        self.state.isLoggedIn && self.state.role === 'doctor' && _react2.default.createElement(
                             _materialUi.Button,
                             { color: 'inherit', onClick: function onClick() {
                                     return self.navigate('/prescriptions/assign');
@@ -47273,13 +47362,25 @@ var Layout = function (_Component) {
                     _react2.default.createElement('iframe', { ref: function ref(elt) {
                             self._sessionFrame = elt;self.handleCheckSession();
                         }, id: 'session-frame', src: 'http://localhost:60000/check_session', style: { display: "none" } })
-                )
+                ),
+                _react2.default.createElement(_materialUi.Snackbar, { anchorOrigin: { vertical: 'bottom', horizontal: 'center' }, open: self.state.isSnackbarOpened, onClose: self.handleSnackbarClose, message: _react2.default.createElement(
+                        'span',
+                        null,
+                        self.state.snackbarMessage
+                    ) })
             );
         }
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
             var self = this;
+            self._appDispatcher = _appDispatcher2.default.register(function (payload) {
+                switch (payload.actionName) {
+                    case _constants2.default.events.DISPLAY_MESSAGE:
+                        self.displayMessage(payload.data);
+                        break;
+                }
+            });
             var authenticatedUser = _stores.UserStore.getUser();
             if (authenticatedUser && authenticatedUser['id_token']) {
                 self.handleUserLogin();
@@ -47287,6 +47388,11 @@ var Layout = function (_Component) {
 
             _stores.UserStore.addLoginListener(self.handleUserLogin);
             _stores.UserStore.addLogoutListener(self.handleUserLogout);
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            _appDispatcher2.default.unregister(this._appDispatcher);
         }
     }]);
 

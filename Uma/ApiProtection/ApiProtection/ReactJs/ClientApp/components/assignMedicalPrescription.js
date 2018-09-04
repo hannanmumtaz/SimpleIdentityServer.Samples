@@ -1,5 +1,5 @@
 ﻿import React, { Component } from "react";
-import { Paper, Typography, CircularProgress, Button } from 'material-ui';
+import { Paper, Typography, CircularProgress, Button, Select, MenuItem } from 'material-ui';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import { withStyles } from 'material-ui/styles';
@@ -23,7 +23,7 @@ class AssignMedicalPrescription extends Component {
         this.state = {
             isLoading: false,
             description: '',
-            subject: ''
+            subject: 'patient1'
         };
     }
 
@@ -76,12 +76,15 @@ class AssignMedicalPrescription extends Component {
                     <div>
                         <FormControl fullWidth={true}>
                             <InputLabel>Description</InputLabel>
-                            <Input name="description" onChange={self.handleChangeProperty} />
-                            <FormHelperText>Enter the desciption</FormHelperText>
+                            <Input name="description" value={self.state.description} onChange={self.handleChangeProperty} />
+                            <FormHelperText>Enter the prescription desciption</FormHelperText>
                         </FormControl>
                         <FormControl fullWidth={true}>
                             <InputLabel>Patient subject</InputLabel>
-                            <Input name="subject" onChange={self.handleChangeProperty} />
+                            <Select value={self.state.subject} onChange={self.handleChangeProperty} name="subject">
+                                <MenuItem value="patient1">patient1</MenuItem>
+                                <MenuItem value="patient2">patient2</MenuItem>
+                            </Select>
                             <FormHelperText>Enter the patient subject</FormHelperText>
                         </FormControl>
                         <Button variant="raised" color="primary" onClick={self.addMedicalPrescription}>Add prescription</Button>

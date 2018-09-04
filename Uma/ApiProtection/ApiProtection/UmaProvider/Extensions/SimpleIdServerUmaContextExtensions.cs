@@ -26,6 +26,7 @@ namespace ApiProtection.UmaProvider.Extensions
     public static class SimpleIdServerUmaContextExtensions
     {
         private static string _firstPolicyId = "986ea7da-d911-48b8-adfa-124b3827246a";
+        private static string _secondPolicyId = "57ea592f-2c59-4923-a01d-56d4900e6df2";
 
         #region Public static methods
 
@@ -53,7 +54,14 @@ namespace ApiProtection.UmaProvider.Extensions
                     new ResourceSet
                     {
                         Id = "1",
-                        Name = "all medical prescriptions patient",
+                        Name = "all medical prescriptions patient1",
+                        Type = "all medical prescriptions",
+                        Scopes = "read,write"
+                    },
+                    new ResourceSet
+                    {
+                        Id = "2",
+                        Name = "all medical prescriptions patient2",
                         Type = "all medical prescriptions",
                         Scopes = "read,write"
                     }
@@ -65,9 +73,13 @@ namespace ApiProtection.UmaProvider.Extensions
         {
             if (!context.Policies.Any())
             {
-                var patientClaims = new List<SimpleIdentityServer.Uma.Core.Models.Claim>
+                var patient1Claims = new List<SimpleIdentityServer.Uma.Core.Models.Claim>
                 {
-                    new SimpleIdentityServer.Uma.Core.Models.Claim { Type = "sub", Value = "patient" }
+                    new SimpleIdentityServer.Uma.Core.Models.Claim { Type = "sub", Value = "patient1" }
+                };
+                var patient2Claims = new List<SimpleIdentityServer.Uma.Core.Models.Claim>
+                {
+                    new SimpleIdentityServer.Uma.Core.Models.Claim { Type = "sub", Value = "patient2" }
                 };
                 var doctorClaims = new List<SimpleIdentityServer.Uma.Core.Models.Claim>
                 {
@@ -95,13 +107,48 @@ namespace ApiProtection.UmaProvider.Extensions
                                 IsResourceOwnerConsentNeeded = false,
                                 ClientIdsAllowed = "",
                                 Scopes = "read",
-                                Claims = JsonConvert.SerializeObject(patientClaims),
+                                Claims = JsonConvert.SerializeObject(patient1Claims),
                                 OpenIdProvider = "http://localhost:60000/.well-known/openid-configuration"
                             },
                             new PolicyRule
                             {
                                 Id = Guid.NewGuid().ToString(),
                                 PolicyId = _firstPolicyId,
+                                IsResourceOwnerConsentNeeded = false,
+                                ClientIdsAllowed = "",
+                                Scopes = "write",
+                                Claims = JsonConvert.SerializeObject(doctorClaims),
+                                OpenIdProvider = "http://localhost:60000/.well-known/openid-configuration"
+                            }
+                        }
+                    },
+                    new Policy
+                    {
+                        Id = _secondPolicyId,
+                        PolicyResources = new List<PolicyResource>
+                        {
+                            new PolicyResource
+                            {
+                                PolicyId = _secondPolicyId,
+                                ResourceSetId = "2"
+                            }
+                        },
+                        Rules = new List<PolicyRule>
+                        {
+                            new PolicyRule
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                PolicyId = _secondPolicyId,
+                                IsResourceOwnerConsentNeeded = false,
+                                ClientIdsAllowed = "",
+                                Scopes = "read",
+                                Claims = JsonConvert.SerializeObject(patient2Claims),
+                                OpenIdProvider = "http://localhost:60000/.well-known/openid-configuration"
+                            },
+                            new PolicyRule
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                PolicyId = _secondPolicyId,
                                 IsResourceOwnerConsentNeeded = false,
                                 ClientIdsAllowed = "",
                                 Scopes = "write",

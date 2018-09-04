@@ -15,7 +15,6 @@ namespace ApiProtection.ReactJs.Controllers
 {
     public class PrescriptionsController : Controller
     {
-        private const string umaResourceId = "1"; // TODO : EXTERNALIZE THE UMA RESOURCE ID.
         private readonly IIdentityServerUmaClientFactory _identityServerUmaClientFactory;
         private readonly IIdentityServerClientFactory _identityServerClientFactory;
         private readonly IJwsParser _jwsParser;
@@ -40,7 +39,7 @@ namespace ApiProtection.ReactJs.Controllers
             var doctorSubject = _jwsParser.GetPayload(accessToken)["sub"];
             addPrescriptionRequest.DoctorSubject = doctorSubject.ToString();
             var umaAccessToken = string.Empty;
-            umaAccessToken = await TryGetUmaAccessToken(accessToken, umaResourceId, "write");
+            umaAccessToken = await TryGetUmaAccessToken(accessToken, GetResourceId(addPrescriptionRequest.PatientSubject), "write");
             if (string.IsNullOrWhiteSpace(umaAccessToken))
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
@@ -70,9 +69,9 @@ namespace ApiProtection.ReactJs.Controllers
                 return GetError("not_authorized", "not authorized", HttpStatusCode.Unauthorized);
             }
 
-            var doctorSubject = _jwsParser.GetPayload(accessToken)["sub"];
+            var doctorSubject = _jwsParser.GetPayload(accessToken)["sub"].ToString();
             var umaAccessToken = string.Empty;
-            umaAccessToken = await TryGetUmaAccessToken(accessToken, umaResourceId, "read");
+            umaAccessToken = await TryGetUmaAccessToken(accessToken, GetResourceId(doctorSubject), "read");
             if (string.IsNullOrWhiteSpace(umaAccessToken))
             {
                 return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
@@ -89,6 +88,21 @@ namespace ApiProtection.ReactJs.Controllers
             result.EnsureSuccessStatusCode();
             var json = await result.Content.ReadAsStringAsync();
             return new OkObjectResult(JsonConvert.DeserializeObject(json));
+        }
+
+        private static string GetResourceId(string subject)
+        {
+            if(subject == "patient1")
+            {
+                return "1";
+            }
+
+            if (subject == "patient2")
+            {
+                return "2";
+            }
+
+            return null;
         }
 
         private bool TryGetAccessToken(out string accessToken)
