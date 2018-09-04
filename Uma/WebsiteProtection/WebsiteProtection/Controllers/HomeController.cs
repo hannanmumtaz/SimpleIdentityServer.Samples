@@ -70,12 +70,6 @@ namespace WebsiteProtection.Controllers
                 .UseClientSecretBasicAuth("ProtectedWebsite", "ProtectedWebsite")
                 .UsePassword(viewModel.Login, viewModel.Password, "openid", "profile")
                 .ResolveAsync(Constants.OpenIdUrl);
-	    if (result.Content == null) {
-	       System.Console.WriteLine("error");
-	    } else {
-	       System.Console.WriteLine("bingo");
-	    }
-	    
             var userInfo = await _identityServerClientFactory.CreateUserInfoClient()
                 .Resolve(Constants.OpenIdUrl, result.Content.AccessToken).ConfigureAwait(false);
             var claims = new List<Claim>();

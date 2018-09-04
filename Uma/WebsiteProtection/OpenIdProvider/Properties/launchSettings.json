@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WebsiteProtection.OpenIdProvider": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

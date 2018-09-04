@@ -600,6 +600,50 @@ namespace OpenIdMigration.Common
                         PostLogoutRedirectUris = "http://localhost:64950/end_session",
                         GrantTypes = "0,1,2,4",
                         ResponseTypes = "0,1,2"
+                    },                    
+                    new SimpleIdentityServer.EF.Models.Client // Protected website
+                    {
+                        ClientId = "ProtectedWebsite",
+                        ClientName = "ProtectedWebsite",
+                        ClientSecrets = new List<ClientSecret>
+                        {
+                            new ClientSecret
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Type = SecretTypes.SharedSecret,
+                                Value = "ProtectedWebsite"
+                            }
+                        },
+                        TokenEndPointAuthMethod = TokenEndPointAuthenticationMethods.client_secret_basic,
+                        LogoUri = "http://img.over-blog-kiwi.com/1/47/73/14/20150513/ob_06dc4f_chiot-shiba-inu-a-vendre-prix-2015.jpg",
+                        PolicyUri = "http://openid.net",
+                        TosUri = "http://openid.net",
+                        ClientScopes = new List<ClientScope>
+                        {
+                            new ClientScope
+                            {
+                                ScopeName = "openid"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "role"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "profile"
+                            },
+                            new ClientScope
+                            {
+                                ScopeName = "website_api"
+                            }
+                        },
+                        GrantTypes = "4",
+                        ResponseTypes = "0,1,2",
+                        IdTokenSignedResponseAlg = "RS256",
+                        ApplicationType = ApplicationTypes.web,
+                        RedirectionUrls = "https://website/callback",
+                        UpdateDateTime = DateTime.UtcNow,
+                        CreateDateTime = DateTime.UtcNow
                     }
                 });
             }
